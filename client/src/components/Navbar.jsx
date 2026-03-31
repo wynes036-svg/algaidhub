@@ -100,7 +100,7 @@ export default function Navbar() {
                     value={keyword}
                     onChange={handleKeyword}
                     onKeyDown={handleKeyDown}
-                    onBlur={() => setTimeout(() => setSuggestions([]), 200)}
+                    onBlur={() => setTimeout(() => { setSuggestions([]); }, 300)}
                     placeholder="Search titles..."
                     style={styles.searchInput}
                   />
@@ -116,7 +116,16 @@ export default function Navbar() {
                   )}
                 </div>
               )}
-              <button style={styles.iconBtn} onClick={() => setSearchOpen(!searchOpen)}>🔍</button>
+              <button style={styles.iconBtn} onClick={() => {
+                if (searchOpen && keyword.trim()) {
+                  navigate(`/search?q=${encodeURIComponent(keyword.trim())}`);
+                  setKeyword("");
+                  setSuggestions([]);
+                  setSearchOpen(false);
+                } else {
+                  setSearchOpen(!searchOpen);
+                }
+              }}>🔍</button>
             </div>
           </div>
 
