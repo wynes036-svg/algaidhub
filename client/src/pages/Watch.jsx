@@ -5,7 +5,7 @@ import { useApp } from "../context/AppContext";
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
 const VIDEO_SERVER = "http://localhost:3001";
-const SERVERS = ["VidLink", "VidSrc", "SuperEmbed", "My Server", "YouTube Trailer"];
+const SERVERS = ["VidLink", "VidSrc", "VidSrc.me", "MultiEmbed", "Embed.su", "My Server", "YouTube Trailer"];
 
 export default function Watch() {
   const { id } = useParams();
@@ -45,7 +45,7 @@ export default function Watch() {
     const totalSeconds = (movie.runtime || 120) * 60;
     clearInterval(timerRef.current);
     elapsedRef.current = 0;
-    if (activeServer === 3) return; // My Server uses native video tracking
+    if (activeServer === 5) return; // My Server uses native video tracking
     updateProgress(movie, 1);
     timerRef.current = setInterval(() => {
       if (paused) return;
@@ -136,13 +136,33 @@ export default function Watch() {
               ) : (
                 <div style={styles.noVideo}>
                   <p>Could not find this movie on VidSrc.</p>
-                  <button style={{ ...styles.controlBtn, marginTop: "16px" }} onClick={() => setActiveServer(2)}>Try SuperEmbed</button>
+                  <button style={{ ...styles.controlBtn, marginTop: "16px" }} onClick={() => setActiveServer(2)}>Try VidSrc.me</button>
                 </div>
               )
             ) : activeServer === 2 ? (
-              <iframe key={`superembed-${id}`} src={`https://getsuperembed.link/?video_id=${id}&tmdb=1`}
-                style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />
+              imdbId ? (
+                <iframe key={`vidsrcme-${imdbId}`} src={`https://vidsrc.me/embed/movie?imdb=${imdbId}`}
+                  style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />
+              ) : (
+                <div style={styles.noVideo}>
+                  <p>Could not find this movie on VidSrc.me.</p>
+                  <button style={{ ...styles.controlBtn, marginTop: "16px" }} onClick={() => setActiveServer(3)}>Try MultiEmbed</button>
+                </div>
+              )
             ) : activeServer === 3 ? (
+              <iframe key={`multiembed-${id}`} src={`https://multiembed.mov/?video_id=${id}&tmdb=1`}
+                style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />
+            ) : activeServer === 4 ? (
+              imdbId ? (
+                <iframe key={`embedsu-${imdbId}`} src={`https://embed.su/embed/movie/${imdbId}`}
+                  style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />
+              ) : (
+                <div style={styles.noVideo}>
+                  <p>Could not find this movie on Embed.su.</p>
+                  <button style={{ ...styles.controlBtn, marginTop: "16px" }} onClick={() => setActiveServer(5)}>Try My Server</button>
+                </div>
+              )
+            ) : activeServer === 5 ? (
               videoUrl ? (
                 <video ref={videoRef} key={videoUrl} controls autoPlay
                   onTimeUpdate={(e) => {
@@ -162,7 +182,7 @@ export default function Watch() {
                     Add <code style={{ color: "#e50914" }}>{id}.mp4</code> to{" "}
                     <code style={{ color: "#e50914" }}>netflix-clone/server/videos/</code>
                   </p>
-                  <button style={{ ...styles.controlBtn, marginTop: "16px" }} onClick={() => setActiveServer(4)}>Switch to YouTube</button>
+                  <button style={{ ...styles.controlBtn, marginTop: "16px" }} onClick={() => setActiveServer(6)}>Switch to YouTube</button>
                 </div>
               )
             ) : (
