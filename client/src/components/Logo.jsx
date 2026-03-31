@@ -1,9 +1,10 @@
+import birdImg from "/avatar.jpg";
+
 export default function Logo({ size = 36 }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-      {/* Bird image */}
       <img
-        src="/avatar.jpg"
+        src={birdImg}
         alt="AlgaidHub"
         style={{
           width: size,
@@ -13,7 +14,6 @@ export default function Logo({ size = 36 }) {
           border: "2px solid #e50914",
         }}
       />
-      {/* Text */}
       <span style={{
         fontFamily: "'Arial Black', 'Helvetica Neue', Arial, sans-serif",
         fontSize: size * 0.6,
