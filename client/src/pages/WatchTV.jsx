@@ -6,7 +6,6 @@ import SkipButton from "../components/SkipButton";
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
 const SERVERS = ["VidLink", "VidSrc.me", "Embed.su", "YouTube Trailer"];
-const SANDBOX = "allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen";
 
 export default function WatchTV() {
   const { id, season, episode } = useParams();
@@ -41,12 +40,9 @@ export default function WatchTV() {
         style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 1) {
-      // VidSrc.me TV embed
-      return imdbId
-        ? <iframe key={`vm-${imdbId}-${s}-${e}`} src={`https://vidsrc.me/embed/tv?imdb=${imdbId}&season=${s}&episode=${e}`}
-            style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />
-        : <iframe key={`vm2-${id}-${s}-${e}`} src={`https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}`}
-            style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+      // Use TMDB ID directly - more reliable for TV shows
+      return <iframe key={`vm-${id}-${s}-${e}`} src={`https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}`}
+          style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 2) {
       return imdbId

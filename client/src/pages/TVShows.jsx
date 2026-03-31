@@ -96,16 +96,11 @@ export default function TVShows() {
                     alt={show.name}
                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   />
-                  <div style={styles.overlay}>
-                    <span style={styles.rating}>▶</span>
-                  </div>
+                  <div style={styles.overlay} />
                   {show.vote_average > 0 && (
                     <span style={styles.badge}>{show.vote_average.toFixed(1)}</span>
                   )}
-                </div>
-                <div style={{ padding: "6px 2px 0" }}>
-                  <div style={styles.title}>{show.name}</div>
-                  <div style={styles.year}>{show.first_air_date?.slice(0, 4)}</div>
+                  <div style={styles.titleOverlay}>{show.name}</div>
                 </div>
               </div>
             ))}
@@ -156,14 +151,17 @@ const styles = {
   },
   overlay: {
     position: "absolute", inset: 0, background: "rgba(0,0,0,0)",
-    display: "flex", alignItems: "center", justifyContent: "center",
     transition: "background 0.2s",
   },
-  rating: { color: "#fff", fontSize: "24px", opacity: 0 },
   badge: {
     position: "absolute", top: "8px", right: "8px",
-    background: "rgba(255,255,255,0.95)", color: "#111",
+    background: "#e50914", color: "#fff",
     fontSize: "11px", fontWeight: "700", padding: "3px 6px", borderRadius: "3px",
+  },
+  titleOverlay: {
+    position: "absolute", bottom: 0, left: 0, right: 0,
+    background: "linear-gradient(transparent, rgba(0,0,0,0.85))",
+    padding: "20px 8px 8px", fontSize: "12px", color: "#fff", fontWeight: "500",
   },
   title: {
     fontSize: "13px", color: "#ddd", fontWeight: "400",
