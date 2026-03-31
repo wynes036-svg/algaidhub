@@ -27,7 +27,7 @@ export function AppProvider({ children }) {
 
   const login = (userData) => {
     setIsLoggedIn(true);
-    setUser(userData);
+    setUser({ ...userData, avatar: userData.avatar || "🎬" });
     setShowLoginModal(false);
   };
 
@@ -64,12 +64,17 @@ export function AppProvider({ children }) {
     setContinueWatching((prev) => prev.filter((m) => m.id !== id));
   };
 
+  const updateAvatar = (avatar) => {
+    setUser((prev) => ({ ...prev, avatar }));
+  };
+
   return (
     <AppContext.Provider value={{
       isLoggedIn, user, login, logout,
       favorites, addFavorite, removeFavorite, isFavorite,
       showLoginModal, setShowLoginModal,
       continueWatching, updateProgress, removeFromContinue,
+      updateAvatar,
     }}>
       {children}
     </AppContext.Provider>

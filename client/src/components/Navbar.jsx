@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
+import ProfileMenu from "./ProfileMenu";
 import Logo from "./Logo";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
@@ -136,10 +137,7 @@ export default function Navbar() {
 
           {/* Auth */}
           {isLoggedIn ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <span style={{ fontSize: "13px", color: "#ccc" }}>Hi, {user?.name}</span>
-              <button style={styles.signInBtn} onClick={logout}>Sign Out</button>
-            </div>
+            <ProfileMenu />
           ) : (
             <button style={styles.signInBtn} onClick={() => setShowLoginModal(true)}>Sign In</button>
           )}
