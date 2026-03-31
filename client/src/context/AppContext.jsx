@@ -17,7 +17,15 @@ const removeProgress = (movieId) => {
 export function AppProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem("algaid_user"));
   const [user, setUser] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("algaid_user")); } catch { return null; }
+    try {
+      const u = JSON.parse(localStorage.getItem("algaid_user"));
+      // Update old sessions that have emoji avatar to use the image
+      if (u && (u.avatar === "🎬" || !u.avatar)) {
+        u.avatar = "/avatar.jpg";
+        localStorage.setItem("algaid_user", JSON.stringify(u));
+      }
+      return u;
+    } catch { return null; }
   });
   const [favorites, setFavorites] = useState(() => {
     try { return JSON.parse(localStorage.getItem("algaid_favorites") || "[]"); } catch { return []; }
