@@ -4,7 +4,7 @@ import { useApp } from "../context/AppContext";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
-const SERVERS = ["VidLink", "VidBinge", "2embed (Anime)", "VidSrc.me", "Embed.su", "YouTube Trailer"];
+const SERVERS = ["VidLink", "2Embed", "2embed (Anime)", "VidSrc.me", "Embed.su", "YouTube Trailer"];
 
 export default function WatchTV() {
   const { id, season, episode } = useParams();
@@ -42,7 +42,7 @@ export default function WatchTV() {
         style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 1) {
-      return <iframe key={`ae-${id}-${s}-${e}`} src={`https://vidbinge.dev/embed/tv/${id}-${s}-${e}`}
+      return <iframe key={`ae-${id}-${s}-${e}`} src={`https://2embed.cc/embedtvfull/${id}-${s}-${e}`}
         style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 2) {

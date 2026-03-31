@@ -5,7 +5,7 @@ import { useApp } from "../context/AppContext";
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
 const VIDEO_SERVER = "http://localhost:3001";
-const SERVERS = ["VidLink", "VidBinge", "VidSrc.me", "Embed.su", "My Server", "YouTube Trailer"];
+const SERVERS = ["VidLink", "2Embed", "VidSrc.me", "Embed.su", "My Server", "YouTube Trailer"];
 
 export default function Watch() {
   const { id } = useParams();
@@ -55,7 +55,7 @@ export default function Watch() {
 
   const renderPlayer=()=>{
     if(activeServer===0)return <iframe key={"vl"+id} src={"https://vidlink.pro/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
-    if(activeServer===1)return <iframe key={"ae"+id} src={"https://vidbinge.dev/embed/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    if(activeServer===1)return <iframe key={"ae"+id} src={"https://2embed.cc/embed/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     if(activeServer===2){if(!imdbId)return <div style={styles.noVideo}><p>Not found on VidSrc.me</p></div>;return <iframe key={"vm"+imdbId} src={"https://vidsrc.me/embed/movie?imdb="+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
     if(activeServer===3){if(!imdbId)return <div style={styles.noVideo}><p>Not found on Embed.su</p></div>;return <iframe key={"es"+imdbId} src={"https://embed.su/embed/movie/"+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
     if(activeServer===4){
