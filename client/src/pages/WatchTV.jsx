@@ -1,10 +1,10 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useApp } from "../context/AppContext";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
-const SERVERS = ["VidLink", "VidSrc.xyz", "2embed (Anime)", "VidSrc.me", "YouTube Trailer"];
+const SERVERS = ["VidSrc.xyz", "VidLink", "2embed (Anime)", "VidSrc.me", "YouTube Trailer"];
 
 export default function WatchTV() {
   const { id, season, episode } = useParams();
@@ -18,6 +18,28 @@ export default function WatchTV() {
   const [lang, setLang] = useState("sub"); // sub or dub
   const s = Number(season) || 1;
   const e = Number(episode) || 1;
+  const playerRef = useRef(null);
+  const tapRef = useRef(null);
+
+  const handleDoubleTap = () => {
+    const el = playerRef.current;
+    if (!el) return;
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el);
+    }
+  };
+
+  const handleTap = () => {
+    if (tapRef.current) {
+      clearTimeout(tapRef.current);
+      tapRef.current = null;
+      handleDoubleTap();
+    } else {
+      tapRef.current = setTimeout(() => { tapRef.current = null; }, 300);
+    }
+  };
 
   // Check if show is anime (genre 16 = Animation, or origin country JP)
   const isAnime = show?.genres?.some(g => g.id === 16) || show?.origin_country?.includes("JP");
@@ -38,11 +60,11 @@ export default function WatchTV() {
 
   const renderPlayer = () => {
     if (activeServer === 0) {
-      return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}`}
+      return <iframe key={`vx-${id}-${s}-${e}`} src={`https://vidsrc.xyz/embed/tv/${id}/${s}/${e}`}
         style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 1) {
-      return <iframe key={`vx-${id}-${s}-${e}`} src={`https://vidsrc.xyz/embed/tv/${id}/${s}/${e}`}
+      return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}`}
         style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 2) {
@@ -86,7 +108,7 @@ export default function WatchTV() {
 
         {/* Player */}
         <div className="watch-player">
-          <div style={{...styles.playerWrap, position:"relative"}}>
+          <div ref={playerRef} style={{...styles.playerWrap, position:"relative"}} onClick={handleTap}>
             {renderPlayer()}
           </div>
         </div>

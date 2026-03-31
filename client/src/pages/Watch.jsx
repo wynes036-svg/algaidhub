@@ -4,7 +4,7 @@ import { useApp } from "../context/AppContext";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
-const SERVERS = ["VidLink", "VidSrc.xyz", "VidSrc.me", "YouTube Trailer"];
+const SERVERS = ["VidSrc.xyz", "VidLink", "VidSrc.me", "YouTube Trailer"];
 
 export default function Watch() {
   const { id } = useParams();
@@ -17,6 +17,8 @@ export default function Watch() {
   const [lightOff, setLightOff] = useState(false);
   const timerRef = useRef(null);
   const elapsedRef = useRef(0);
+  const playerRef = useRef(null);
+  const tapRef = useRef(null);
 
   useEffect(() => {
     fetch(BASE_URL+"/movie/"+id+"?api_key="+API_KEY+"&append_to_response=videos,external_ids")
@@ -44,11 +46,31 @@ export default function Watch() {
 
   useEffect(()=>()=>clearInterval(timerRef.current),[]);
 
+  const handleDoubleTap = () => {
+    const el = playerRef.current;
+    if (!el) return;
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el);
+    }
+  };
+
+  const handleTap = () => {
+    if (tapRef.current) {
+      clearTimeout(tapRef.current);
+      tapRef.current = null;
+      handleDoubleTap();
+    } else {
+      tapRef.current = setTimeout(() => { tapRef.current = null; }, 300);
+    }
+  };
+
   const favorited=movie&&isFavorite(movie.id);
 
   const renderPlayer=()=>{
-    if(activeServer===0)return <iframe key={"vl"+id} src={"https://vidlink.pro/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
-    if(activeServer===1)return <iframe key={"vx"+id} src={"https://vidsrc.xyz/embed/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    if(activeServer===0)return <iframe key={"vx"+id} src={"https://vidsrc.xyz/embed/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    if(activeServer===1)return <iframe key={"vl"+id} src={"https://vidlink.pro/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     if(activeServer===2){if(!imdbId)return <div style={styles.noVideo}><p>Not found on VidSrc.me</p></div>;return <iframe key={"vm"+imdbId} src={"https://vidsrc.me/embed/movie?imdb="+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
     if(!trailer)return <div style={styles.noVideo}><p>No trailer available.</p></div>;
     return <iframe src={"https://www.youtube.com/embed/"+trailer.key+"?autoplay=1"} title={movie?.title} style={styles.iframe} allow="autoplay; fullscreen" allowFullScreen />;
@@ -67,7 +89,9 @@ export default function Watch() {
           </div>
         </div>
         <div className="watch-player">
-          <div style={styles.playerWrap}>{renderPlayer()}</div>
+          <div ref={playerRef} style={styles.playerWrap} onClick={handleTap}>
+            {renderPlayer()}
+          </div>
         </div>
         <div style={styles.serverBar}>
           <span style={styles.serverLabel}>Server:</span>
@@ -84,7 +108,7 @@ const styles={
   serverLabel:{color:"#e50914",fontSize:"13px",marginRight:"4px",fontWeight:"600"},
   serverBtn:{background:"#2a2a2a",color:"#e50914",border:"1px solid #2a2a2a",padding:"8px 18px",borderRadius:"5px",cursor:"pointer",fontSize:"13px"},
   serverBtnActive:{background:"#e50914",color:"#fff",border:"1px solid #e50914"},
-  playerWrap:{position:"relative",width:"100%",maxWidth:"1200px",aspectRatio:"16/9",background:"#000",borderRadius:"8px",overflow:"hidden",margin:"0 auto"},
+  playerWrap:{position:"relative",width:"100%",maxWidth:"1200px",aspectRatio:"16/9",background:"#000",borderRadius:"8px",overflow:"hidden",margin:"0 auto",cursor:"pointer"},
   iframe:{position:"absolute",top:0,left:0,width:"100%",height:"100%",border:"none"},
   noVideo:{textAlign:"center",color:"#aaa",padding:"60px 20px",fontSize:"16px"},
 };
