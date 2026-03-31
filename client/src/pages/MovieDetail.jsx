@@ -39,6 +39,8 @@ export default function MovieDetail() {
 
   const favorited = isFavorite(movie.id);
   const director = movie.credits?.crew?.find((c) => c.job === "Director");
+  const days = movie.release_date ? (Date.now() - new Date(movie.release_date).getTime()) / (1000 * 60 * 60 * 24) : 999;
+  const quality = days < 60 ? { label: "CAM", color: "#ff6b00" } : days < 120 ? { label: "HD-RIP", color: "#f5c518" } : { label: "HD", color: "#3e8afa" };
 
   return (
     <>
@@ -53,7 +55,7 @@ export default function MovieDetail() {
             <span className="match">{Math.round(movie.vote_average * 10)}% Match</span>
             <span>{movie.release_date?.slice(0, 4)}</span>
             <span>{movie.runtime} min</span>
-            <span className="quality-badge">HD</span>
+            <span className="quality-badge" style={{ borderColor: quality.color, color: quality.color }}>{quality.label}</span>
             {movie.adult && <span className="quality-badge">18+</span>}
           </div>
 
