@@ -29,7 +29,7 @@ export function AppProvider({ children }) {
   });
 
   const login = (userData) => {
-    const u = { ...userData, avatar: userData.avatar || "🎬" };
+    const u = { ...userData, avatar: userData.avatar || "/avatar.jpg" };
     setIsLoggedIn(true);
     setUser(u);
     localStorage.setItem("algaid_user", JSON.stringify(u));

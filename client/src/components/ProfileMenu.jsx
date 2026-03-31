@@ -32,7 +32,10 @@ export default function ProfileMenu() {
         style={styles.avatar}
         title={user?.name}
       >
-        <span style={{ fontSize: "20px" }}>{user?.avatar || "🎬"}</span>
+        {user?.avatar?.startsWith("/") || user?.avatar?.startsWith("http")
+          ? <img src={user.avatar} alt="profile" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "6px" }} />
+          : <span style={{ fontSize: "20px" }}>{user?.avatar || "🎬"}</span>
+        }
       </div>
 
       {/* Dropdown */}
@@ -40,7 +43,11 @@ export default function ProfileMenu() {
         <div style={styles.dropdown}>
           {/* User info */}
           <div style={styles.userInfo}>
-            <div style={styles.avatarLarge}>{user?.avatar || "🎬"}</div>
+            <div style={styles.avatarLarge}>
+              {user?.avatar?.startsWith("/") || user?.avatar?.startsWith("http")
+                ? <img src={user.avatar} alt="profile" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }} />
+                : user?.avatar || "🎬"}
+            </div>
             <div>
               <div style={{ fontWeight: "600", fontSize: "15px" }}>{user?.name}</div>
               <div style={{ fontSize: "12px", color: "#888" }}>{user?.email}</div>
