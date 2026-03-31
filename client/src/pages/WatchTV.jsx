@@ -38,24 +38,24 @@ export default function WatchTV() {
     if (activeServer === 0) {
       // VidLink supports TV: /tv/{id}/{season}/{episode}
       return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}`}
-        style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" sandbox={SANDBOX} />;
+        style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 1) {
       // VidSrc.me TV embed
       return imdbId
         ? <iframe key={`vm-${imdbId}-${s}-${e}`} src={`https://vidsrc.me/embed/tv?imdb=${imdbId}&season=${s}&episode=${e}`}
-            style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" sandbox={SANDBOX} />
+            style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />
         : <iframe key={`vm2-${id}-${s}-${e}`} src={`https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}`}
-            style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" sandbox={SANDBOX} />;
+            style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 2) {
       return <iframe key={`me-${id}-${s}-${e}`} src={`https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`}
-        style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" sandbox={SANDBOX} />;
+        style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 3) {
       return imdbId
         ? <iframe key={`es-${imdbId}-${s}-${e}`} src={`https://embed.su/embed/tv/${imdbId}/${s}/${e}`}
-            style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" sandbox={SANDBOX} />
+            style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />
         : <div style={styles.noVideo}><p>Not found on Embed.su</p></div>;
     }
     if (!trailer) return <div style={styles.noVideo}><p>No trailer available.</p></div>;

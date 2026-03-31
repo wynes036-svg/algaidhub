@@ -56,17 +56,17 @@ export default function Watch() {
   const videoUrl=matchedVideo?VIDEO_SERVER+"/videos/"+matchedVideo:null;
 
   const renderPlayer=()=>{
-    if(activeServer===0)return <iframe key={"vl"+id} src={"https://vidlink.pro/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" sandbox={SANDBOX} />;
-    if(activeServer===1)return <iframe key={"mc"+id} src={"https://megacloud.tv/embed-2/e-1/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" sandbox={SANDBOX} />;
-    if(activeServer===2){if(!imdbId)return <div style={styles.noVideo}><p>Not found on VidSrc.me</p></div>;return <iframe key={"vm"+imdbId} src={"https://vidsrc.me/embed/movie?imdb="+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" sandbox={SANDBOX} />;}
-    if(activeServer===3)return <iframe key={"me"+id} src={"https://multiembed.mov/?video_id="+id+"&tmdb=1"} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" sandbox={SANDBOX} />;
-    if(activeServer===4){if(!imdbId)return <div style={styles.noVideo}><p>Not found on Embed.su</p></div>;return <iframe key={"es"+imdbId} src={"https://embed.su/embed/movie/"+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" sandbox={SANDBOX} />;}
+    if(activeServer===0)return <iframe key={"vl"+id} src={"https://vidlink.pro/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    if(activeServer===1)return <iframe key={"mc"+id} src={"https://megacloud.tv/embed-2/e-1/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    if(activeServer===2){if(!imdbId)return <div style={styles.noVideo}><p>Not found on VidSrc.me</p></div>;return <iframe key={"vm"+imdbId} src={"https://vidsrc.me/embed/movie?imdb="+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
+    if(activeServer===3)return <iframe key={"me"+id} src={"https://multiembed.mov/?video_id="+id+"&tmdb=1"} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    if(activeServer===4){if(!imdbId)return <div style={styles.noVideo}><p>Not found on Embed.su</p></div>;return <iframe key={"es"+imdbId} src={"https://embed.su/embed/movie/"+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
     if(activeServer===5){
       if(!videoUrl)return <div style={styles.noVideo}><p>No video file found.</p></div>;
       return <video ref={videoRef} key={videoUrl} controls autoPlay onTimeUpdate={e=>{const{currentTime,duration}=e.target;if(duration&&movie){const pct=Math.round((currentTime/duration)*100);if(pct%5===0)updateProgress(movie,pct)}}} style={{width:"100%",height:"100%",background:"#000"}}><source src={videoUrl} type={videoUrl.endsWith(".m3u8")?"application/x-mpegURL":"video/mp4"} /></video>;
     }
     if(!trailer)return <div style={styles.noVideo}><p>No trailer available.</p></div>;
-    return <iframe src={"https://www.youtube.com/embed/"+trailer.key+"?autoplay=1"} title={movie?.title} style={styles.iframe} allow="autoplay; fullscreen" allowFullScreen sandbox={SANDBOX} />;
+    return <iframe src={"https://www.youtube.com/embed/"+trailer.key+"?autoplay=1"} title={movie?.title} style={styles.iframe} allow="autoplay; fullscreen" allowFullScreen />;
   };
 
   return (
