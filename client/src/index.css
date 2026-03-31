@@ -344,3 +344,17 @@ a:hover { color: #e50914; }
   .header-nav { display: none; }
   .detail-title { font-size: 26px; }
 }
+
+@keyframes loadBar {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+@keyframes pulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.05); }
+}
+@keyframes load {
+  from { width: 0%; }
+  to { width: 100%; }
+}

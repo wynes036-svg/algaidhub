@@ -143,11 +143,11 @@ const styles = {
     background: "#2a2a2a", color: "#ccc", border: "none",
     padding: "6px 14px", borderRadius: "20px", cursor: "pointer", fontSize: "13px",
   },
-  filterBtnActive: { background: "#3e8afa", color: "#fff" },
+  filterBtnActive: { background: "#e50914", color: "#fff" },
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
-    gap: "16px", marginBottom: "40px",
+    gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+    gap: "20px", marginBottom: "40px",
   },
   card: { cursor: "pointer", position: "relative" },
   poster: {
@@ -176,5 +176,5 @@ const styles = {
     width: "38px", height: "38px", borderRadius: "50%",
     cursor: "pointer", fontSize: "14px",
   },
-  pageBtnActive: { background: "#3e8afa", color: "#fff" },
+  pageBtnActive: { background: "#e50914", color: "#fff" },
 };

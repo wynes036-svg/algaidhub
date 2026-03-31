@@ -66,7 +66,7 @@ export default function Navbar() {
             { label: "Home", href: "/" },
             { label: "Movies", href: "/movies" },
             { label: "TV Shows", href: "/tv-shows" },
-            { label: "New & Popular", href: "#" },
+            { label: "New & Popular", href: "/new-popular" },
             { label: "My List", href: "#" },
           ].map((item) => (
             <a key={item.label} href={item.href} style={styles.sidebarLink} onClick={() => setSidebarOpen(false)}>{item.label}</a>
@@ -87,7 +87,7 @@ export default function Navbar() {
           <a href="/" className="active">Home</a>
           <a href="/movies">Movies</a>
           <a href="/tv-shows">TV Shows</a>
-          <a href="#">New & Popular</a>
+          <a href="/new-popular">New & Popular</a>
         </nav>
 
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
