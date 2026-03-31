@@ -34,6 +34,15 @@ export default function Navbar() {
     }, 500);
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && keyword.trim()) {
+      setSuggestions([]);
+      setSearchOpen(false);
+      navigate(`/search?q=${encodeURIComponent(keyword.trim())}`);
+      setKeyword("");
+    }
+  };
+
   const goToMovie = (id) => {
     setSuggestions([]);
     setKeyword("");
@@ -90,6 +99,7 @@ export default function Navbar() {
                     autoFocus
                     value={keyword}
                     onChange={handleKeyword}
+                    onKeyDown={handleKeyDown}
                     onBlur={() => setTimeout(() => setSuggestions([]), 200)}
                     placeholder="Search titles..."
                     style={styles.searchInput}
