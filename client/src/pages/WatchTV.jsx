@@ -39,7 +39,7 @@ export default function WatchTV() {
 
   const renderPlayer = () => {
     if (activeServer === 0) {
-      return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}`}
+      return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&muted=false`}
         style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 1) {

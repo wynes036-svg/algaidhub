@@ -76,7 +76,14 @@ export function AppProvider({ children }) {
       setContinueWatching((prev) => prev.filter((m) => m.id !== movie.id));
       return;
     }
-    saveProgress(movie.id, { ...movie, percent });
+    // Normalize the movie object to always have title and correct id
+    const normalized = {
+      ...movie,
+      id: Number(movie.id),
+      title: movie.title || movie.name || "Unknown",
+      percent,
+    };
+    saveProgress(normalized.id, normalized);
     setContinueWatching(Object.values(getProgress()).sort((a, b) => b.updatedAt - a.updatedAt));
   };
 

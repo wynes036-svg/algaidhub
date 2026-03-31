@@ -61,7 +61,7 @@ export default function ContinueWatchingPage() {
                   </div>
                   <button
                     onClick={() => navigate(`/watch/${movie.id}`)}
-                    style={styles.resumeBtn}
+                  style={styles.resumeBtn}
                   >
                     ▶ Resume
                   </button>
