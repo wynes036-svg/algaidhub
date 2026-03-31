@@ -10,7 +10,7 @@ export default function Top10Row() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${API_KEY}&page=1`)
+    fetch(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`)
       .then((r) => r.json())
       .then((d) => setMovies(d.results?.slice(0, 10) || []));
   }, []);
@@ -22,7 +22,7 @@ export default function Top10Row() {
   return (
     <div className="block_area">
       <div className="block_area-header">
-        <h2 className="cat-heading">Top 10 Movies Today</h2>
+        <h2 className="cat-heading">Top 10 Today</h2>
       </div>
       <div style={{ position: "relative" }}>
         <button className="row-scroll-btn left" onClick={() => scroll("left")}>‹</button>
