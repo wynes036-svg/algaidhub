@@ -3,50 +3,24 @@ import { useApp } from "../context/AppContext";
 import Logo from "./Logo";
 
 export default function LoginModal() {
-  const { setShowLoginModal, login, API } = useApp();
+  const { setShowLoginModal, login } = useApp();
   const [tab, setTab] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
     if (!email || !password) { setError("Please fill in all fields."); return; }
-    setLoading(true);
-    try {
-      const res = await fetch(`${API}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) { setError(data.error || "Login failed"); setLoading(false); return; }
-      login(data.user, data.token);
-    } catch {
-      setError("Server error. Try again.");
-    }
-    setLoading(false);
+    const userData = { name: email.split("@")[0], email, avatar: "🎬" };
+    login(userData, null);
   };
 
-  const handleRegister = async (e) => {
+  const handleRegister = (e) => {
     e.preventDefault();
     if (!name || !email || !password) { setError("Please fill in all fields."); return; }
-    setLoading(true);
-    try {
-      const res = await fetch(`${API}/api/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-      const data = await res.json();
-      if (!res.ok) { setError(data.error || "Registration failed"); setLoading(false); return; }
-      login(data.user, data.token);
-    } catch {
-      setError("Server error. Try again.");
-    }
-    setLoading(false);
+    login({ name, email, avatar: "🎬" }, null);
   };
 
   return (
@@ -54,26 +28,23 @@ export default function LoginModal() {
       <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
         <button style={styles.close} onClick={() => setShowLoginModal(false)}>✕</button>
         <div style={styles.logo}><Logo size={28} /></div>
-
         <div style={styles.tabs}>
           <button style={{ ...styles.tab, ...(tab === "login" ? styles.tabActive : {}) }} onClick={() => { setTab("login"); setError(""); }}>Sign In</button>
           <button style={{ ...styles.tab, ...(tab === "register" ? styles.tabActive : {}) }} onClick={() => { setTab("register"); setError(""); }}>Register</button>
         </div>
-
         {error && <p style={styles.error}>{error}</p>}
-
         {tab === "login" ? (
           <form onSubmit={handleLogin} style={styles.form}>
             <input style={styles.input} type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
             <input style={styles.input} type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-            <button type="submit" style={styles.submitBtn} disabled={loading}>{loading ? "Signing in..." : "Sign In"}</button>
+            <button type="submit" style={styles.submitBtn}>Sign In</button>
           </form>
         ) : (
           <form onSubmit={handleRegister} style={styles.form}>
             <input style={styles.input} type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
             <input style={styles.input} type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
             <input style={styles.input} type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-            <button type="submit" style={styles.submitBtn} disabled={loading}>{loading ? "Creating account..." : "Create Account"}</button>
+            <button type="submit" style={styles.submitBtn}>Create Account</button>
           </form>
         )}
       </div>
