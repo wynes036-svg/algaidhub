@@ -1,8 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { useApp } from "../context/AppContext";
-import SkipButton from "../components/SkipButton";
-import UnmuteOverlay from "../components/UnmuteOverlay";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -54,10 +52,9 @@ export default function Watch() {
   const favorited=movie&&isFavorite(movie.id);
   const matchedVideo=serverVideos.find(f=>f.startsWith(id)||f.toLowerCase().includes((movie?.title||"").toLowerCase().slice(0,10)));
   const videoUrl=matchedVideo?VIDEO_SERVER+"/videos/"+matchedVideo:null;
-  const isIframe=activeServer!==3;
 
   const renderPlayer=()=>{
-    if(activeServer===0)return <iframe key={"vl"+id} src={"https://vidlink.pro/movie/"+id+"?autoplay=true&muted=false"} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    if(activeServer===0)return <iframe key={"vl"+id} src={"https://vidlink.pro/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     if(activeServer===1){if(!imdbId)return <div style={styles.noVideo}><p>Not found on VidSrc.me</p></div>;return <iframe key={"vm"+imdbId} src={"https://vidsrc.me/embed/movie?imdb="+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
     if(activeServer===2){if(!imdbId)return <div style={styles.noVideo}><p>Not found on Embed.su</p></div>;return <iframe key={"es"+imdbId} src={"https://embed.su/embed/movie/"+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
     if(activeServer===3){
@@ -81,11 +78,7 @@ export default function Watch() {
           </div>
         </div>
         <div className="watch-player">
-          <div style={{...styles.playerWrap,position:"relative"}}>
-            {renderPlayer()}
-            {isIframe && <UnmuteOverlay key={activeServer} />}
-            <SkipButton runtime={movie?.runtime||120} />
-          </div>
+          <div style={styles.playerWrap}>{renderPlayer()}</div>
         </div>
         <div style={styles.serverBar}>
           <span style={styles.serverLabel}>Server:</span>
