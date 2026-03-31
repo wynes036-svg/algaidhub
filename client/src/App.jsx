@@ -8,6 +8,7 @@ import Movies from "./pages/Movies";
 import TVShows from "./pages/TVShows";
 import Search from "./pages/Search";
 import ContinueWatchingPage from "./pages/ContinueWatchingPage";
+import TVDetail from "./pages/TVDetail";
 import LoginModal from "./components/LoginModal";
 import "./index.css";
 
@@ -22,6 +23,7 @@ function AppRoutes() {
         <Route path="/tv-shows" element={<TVShows />} />
         <Route path="/search" element={<Search />} />
         <Route path="/continue-watching" element={<ContinueWatchingPage />} />
+        <Route path="/tv/:id" element={<TVDetail />} />
         <Route path="/movie/:id" element={<MovieDetail />} />
         <Route path="/tv/:id" element={<MovieDetail />} />
         <Route path="/watch/:id" element={<Watch />} />
