@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useApp } from "../context/AppContext";
+import SkipButton from "../components/SkipButton";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -109,7 +110,10 @@ export default function WatchTV() {
         </div>
 
         <div className="watch-player">
-          <div style={styles.playerWrap}>{renderPlayer()}</div>
+          <div style={{...styles.playerWrap, position:"relative"}}>
+            {renderPlayer()}
+            <SkipButton runtime={show?.episode_run_time?.[0] || 45} />
+          </div>
         </div>
       </div>
     </>
@@ -119,9 +123,9 @@ export default function WatchTV() {
 const styles = {
   controlBtn: { background: "rgba(255,255,255,0.1)", color: "#fff", border: "none", padding: "8px 14px", borderRadius: "4px", cursor: "pointer", fontSize: "13px" },
   serverBar: { background: "#111", padding: "12px 24px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" },
-  serverLabel: { color: "#888", fontSize: "13px", marginRight: "4px" },
-  serverBtn: { background: "#2a2a2a", color: "#ccc", border: "none", padding: "8px 18px", borderRadius: "5px", cursor: "pointer", fontSize: "13px" },
-  serverBtnActive: { background: "#e50914", color: "#fff" },
+  serverLabel: { color: "#e50914", fontSize: "13px", marginRight: "4px", fontWeight: "600" },
+  serverBtn: { background: "#2a2a2a", color: "#e50914", border: "1px solid #2a2a2a", padding: "8px 18px", borderRadius: "5px", cursor: "pointer", fontSize: "13px" },
+  serverBtnActive: { background: "#e50914", color: "#fff", border: "1px solid #e50914" },
   epNav: { background: "#0a0a0a", padding: "10px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" },
   navBtn: { background: "#1a1a1a", color: "#ccc", border: "1px solid #333", padding: "8px 16px", borderRadius: "4px", cursor: "pointer", fontSize: "13px" },
   playerWrap: { position: "relative", width: "100%", maxWidth: "1200px", aspectRatio: "16/9", background: "#000", borderRadius: "8px", overflow: "hidden", margin: "0 auto" },
