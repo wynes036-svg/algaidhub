@@ -92,7 +92,7 @@ export default function TVShows() {
               >
                 <div style={styles.poster}>
                   <img
-                    src={show.poster_path ? `${IMG_BASE}${show.poster_path}` : "https://via.placeholder.com/150x220?text=No+Image"}
+                    src={show.poster_path ? `${IMG_BASE}${show.poster_path}` : "https://placehold.co/150x220/1a1a1a/555?text=No+Image"}
                     alt={show.name}
                     style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
                   />
@@ -167,3 +167,4 @@ const styles = {
   },
   pageBtnActive: { background: "#e50914", color: "#fff" },
 };
+
