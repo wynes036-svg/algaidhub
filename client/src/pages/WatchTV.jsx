@@ -4,7 +4,7 @@ import { useApp } from "../context/AppContext";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
-const SERVERS = ["VidLink", "SmashyStream", "2embed (Anime)", "VidSrc.me", "YouTube Trailer"];
+const SERVERS = ["VidLink", "VidSrc.xyz", "2embed (Anime)", "VidSrc.me", "YouTube Trailer"];
 
 export default function WatchTV() {
   const { id, season, episode } = useParams();
@@ -42,7 +42,7 @@ export default function WatchTV() {
         style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 1) {
-      return <iframe key={`ss-${id}-${s}-${e}`} src={`https://embed.smashystream.com/playere.php?tmdb=${id}&season=${s}&episode=${e}`}
+      return <iframe key={`vx-${id}-${s}-${e}`} src={`https://vidsrc.xyz/embed/tv/${id}/${s}/${e}`}
         style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 2) {

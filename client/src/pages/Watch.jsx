@@ -4,7 +4,7 @@ import { useApp } from "../context/AppContext";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
-const SERVERS = ["VidLink", "SmashyStream", "VidSrc.me", "YouTube Trailer"];
+const SERVERS = ["VidLink", "VidSrc.xyz", "VidSrc.me", "YouTube Trailer"];
 
 export default function Watch() {
   const { id } = useParams();
@@ -48,7 +48,7 @@ export default function Watch() {
 
   const renderPlayer=()=>{
     if(activeServer===0)return <iframe key={"vl"+id} src={"https://vidlink.pro/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
-    if(activeServer===1)return <iframe key={"ss"+id} src={"https://embed.smashystream.com/playere.php?tmdb="+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    if(activeServer===1)return <iframe key={"vx"+id} src={"https://vidsrc.xyz/embed/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     if(activeServer===2){if(!imdbId)return <div style={styles.noVideo}><p>Not found on VidSrc.me</p></div>;return <iframe key={"vm"+imdbId} src={"https://vidsrc.me/embed/movie?imdb="+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
     if(!trailer)return <div style={styles.noVideo}><p>No trailer available.</p></div>;
     return <iframe src={"https://www.youtube.com/embed/"+trailer.key+"?autoplay=1"} title={movie?.title} style={styles.iframe} allow="autoplay; fullscreen" allowFullScreen />;
