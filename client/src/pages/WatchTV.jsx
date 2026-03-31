@@ -4,7 +4,7 @@ import { useApp } from "../context/AppContext";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
-const SERVERS = ["VidLink", "SmashyStream", "2embed (Anime)", "VidSrc.me", "Embed.su", "YouTube Trailer"];
+const SERVERS = ["VidLink", "SmashyStream", "2embed (Anime)", "VidSrc.me", "YouTube Trailer"];
 
 export default function WatchTV() {
   const { id, season, episode } = useParams();
@@ -54,12 +54,6 @@ export default function WatchTV() {
     if (activeServer === 3) {
       return <iframe key={`vm-${id}-${s}-${e}`} src={`https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}`}
           style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
-    }
-    if (activeServer === 4) {
-      return imdbId
-        ? <iframe key={`es-${imdbId}-${s}-${e}`} src={`https://embed.su/embed/tv/${imdbId}/${s}/${e}`}
-            style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />
-        : <div style={styles.noVideo}><p>Not found on Embed.su</p></div>;
     }
     if (!trailer) return <div style={styles.noVideo}><p>No trailer available.</p></div>;
     return <iframe src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1`}

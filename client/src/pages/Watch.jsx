@@ -4,8 +4,7 @@ import { useApp } from "../context/AppContext";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
-const VIDEO_SERVER = "http://localhost:3001";
-const SERVERS = ["VidLink", "SmashyStream", "VidSrc.me", "Embed.su", "My Server", "YouTube Trailer"];
+const SERVERS = ["VidLink", "SmashyStream", "VidSrc.me", "YouTube Trailer"];
 
 export default function Watch() {
   const { id } = useParams();
@@ -16,10 +15,8 @@ export default function Watch() {
   const [imdbId, setImdbId] = useState(null);
   const [activeServer, setActiveServer] = useState(0);
   const [lightOff, setLightOff] = useState(false);
-  const [serverVideos, setServerVideos] = useState([]);
   const timerRef = useRef(null);
   const elapsedRef = useRef(0);
-  const videoRef = useRef(null);
 
   useEffect(() => {
     fetch(BASE_URL+"/movie/"+id+"?api_key="+API_KEY+"&append_to_response=videos,external_ids")
@@ -29,7 +26,6 @@ export default function Watch() {
         const yt=data.videos?.results?.find(v=>v.type==="Trailer"&&v.site==="YouTube");
         setTrailer(yt);
       });
-    fetch(VIDEO_SERVER+"/videos").then(r=>r.json()).then(d=>setServerVideos(d.videos||[])).catch(()=>setServerVideos([]));
   },[id]);
 
   useEffect(()=>{
@@ -37,7 +33,6 @@ export default function Watch() {
     const totalSeconds=(movie.runtime||120)*60;
     clearInterval(timerRef.current);
     elapsedRef.current=0;
-    if(activeServer===4)return;
     updateProgress(movie,1);
     timerRef.current=setInterval(()=>{
       elapsedRef.current+=10;
@@ -50,18 +45,11 @@ export default function Watch() {
   useEffect(()=>()=>clearInterval(timerRef.current),[]);
 
   const favorited=movie&&isFavorite(movie.id);
-  const matchedVideo=serverVideos.find(f=>f.startsWith(id)||f.toLowerCase().includes((movie?.title||"").toLowerCase().slice(0,10)));
-  const videoUrl=matchedVideo?VIDEO_SERVER+"/videos/"+matchedVideo:null;
 
   const renderPlayer=()=>{
     if(activeServer===0)return <iframe key={"vl"+id} src={"https://vidlink.pro/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
-    if(activeServer===1)return <iframe key={"ae"+id} src={"https://embed.smashystream.com/playere.php?tmdb="+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    if(activeServer===1)return <iframe key={"ss"+id} src={"https://embed.smashystream.com/playere.php?tmdb="+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     if(activeServer===2){if(!imdbId)return <div style={styles.noVideo}><p>Not found on VidSrc.me</p></div>;return <iframe key={"vm"+imdbId} src={"https://vidsrc.me/embed/movie?imdb="+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
-    if(activeServer===3){if(!imdbId)return <div style={styles.noVideo}><p>Not found on Embed.su</p></div>;return <iframe key={"es"+imdbId} src={"https://embed.su/embed/movie/"+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
-    if(activeServer===4){
-      if(!videoUrl)return <div style={styles.noVideo}><p>No video file found.</p></div>;
-      return <video ref={videoRef} key={videoUrl} controls autoPlay onTimeUpdate={e=>{const{currentTime,duration}=e.target;if(duration&&movie){const pct=Math.round((currentTime/duration)*100);if(pct%5===0)updateProgress(movie,pct)}}} style={{width:"100%",height:"100%",background:"#000"}}><source src={videoUrl} type={videoUrl.endsWith(".m3u8")?"application/x-mpegURL":"video/mp4"} /></video>;
-    }
     if(!trailer)return <div style={styles.noVideo}><p>No trailer available.</p></div>;
     return <iframe src={"https://www.youtube.com/embed/"+trailer.key+"?autoplay=1"} title={movie?.title} style={styles.iframe} allow="autoplay; fullscreen" allowFullScreen />;
   };
