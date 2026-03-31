@@ -358,3 +358,26 @@ a:hover { color: #e50914; }
   from { width: 0%; }
   to { width: 100%; }
 }
+
+/* Override browser default blue selection on dropdowns */
+select {
+  color-scheme: dark;
+  accent-color: #e50914;
+}
+select option {
+  background: #1a1a1a;
+  color: #fff;
+}
+select option:checked,
+select option:hover {
+  background: #e50914;
+  color: #fff;
+}
+::selection {
+  background: #e50914;
+  color: #fff;
+}
+::-moz-selection {
+  background: #e50914;
+  color: #fff;
+}
