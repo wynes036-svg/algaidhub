@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import MovieRow from "../components/MovieRow";
 import ContinueWatching from "../components/ContinueWatching";
+import Top10Row from "../components/Top10Row";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -43,6 +44,7 @@ export default function Home() {
       <div id="main-wrapper">
         {hero && <Hero movie={hero} />}
         <ContinueWatching />
+        <Top10Row />
         {rows.map((row) => (
           <MovieRow key={row.title} title={row.title} movies={row.movies} />
         ))}

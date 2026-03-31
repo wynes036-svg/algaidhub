@@ -71,7 +71,7 @@ export default function ProfileMenu() {
           <div style={styles.divider} />
 
           {/* Continue Watching */}
-          <div style={styles.menuItem} onClick={() => { navigate("/"); setOpen(false); }}>
+          <div style={styles.menuItem} onClick={() => { navigate("/continue-watching"); setOpen(false); }}>
             <span>▶️</span> Continue Watching
             {continueWatching.length > 0 && (
               <span style={styles.badge}>{continueWatching.length}</span>
