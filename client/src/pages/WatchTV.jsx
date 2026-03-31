@@ -118,7 +118,7 @@ export default function WatchTV() {
               ← Prev Episode
             </button>
           )}
-          <span style={{ color: "#888", fontSize: "13px" }}>Season {s} · Episode {e}</span>
+          <span style={{ color: "#e50914", fontSize: "13px", fontWeight: "600" }}>Season {s} · Episode {e}</span>
           <button style={styles.navBtn} onClick={() => navigate(`/watch/tv/${id}/${s}/${e + 1}`)}>
             Next Episode →
           </button>
