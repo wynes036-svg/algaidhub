@@ -34,7 +34,6 @@ export default function WatchTV() {
         setImdbId(data.external_ids?.imdb_id || null);
         const yt = data.videos?.results?.find((v) => v.type === "Trailer" && v.site === "YouTube");
         setTrailer(yt);
-        if (data) updateProgress({ ...data, title: data.name, id: Number(id) }, 1);
       });
   }, [id]);
 
@@ -50,7 +49,7 @@ export default function WatchTV() {
       updateProgress({ ...show, title: show.name, id: Number(id) }, percent);
     }, 10000);
     return () => clearInterval(timerRef.current);
-  }, [activeServer, show]);
+  }, [activeServer, show?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => () => clearInterval(timerRef.current), []);
 
