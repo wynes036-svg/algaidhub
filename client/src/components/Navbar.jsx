@@ -125,7 +125,12 @@ export default function Navbar() {
                 } else {
                   setSearchOpen(!searchOpen);
                 }
-              }}>🔍</button>
+              }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="16.5" y1="16.5" x2="22" y2="22" />
+                </svg>
+              </button>
             </div>
           </div>
 
