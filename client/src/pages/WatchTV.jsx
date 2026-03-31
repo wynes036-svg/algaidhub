@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useApp } from "../context/AppContext";
 import SkipButton from "../components/SkipButton";
+import UnmuteOverlay from "../components/UnmuteOverlay";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -92,6 +93,7 @@ export default function WatchTV() {
         <div className="watch-player">
           <div style={{...styles.playerWrap, position:"relative"}}>
             {renderPlayer()}
+            <UnmuteOverlay key={activeServer} />
             <SkipButton runtime={show?.episode_run_time?.[0] || 45} />
           </div>
         </div>
