@@ -1,61 +1,74 @@
 export default function Logo({ size = 36 }) {
+  const h = size;
+  const scale = h / 40;
+
   return (
     <svg
-      width={size * 4.2}
-      height={size}
-      viewBox="0 0 168 40"
+      width={200 * scale}
+      height={h}
+      viewBox="0 0 200 40"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      {/* Bird icon */}
-      <g transform="translate(0, 2)">
-        {/* Body */}
-        <ellipse cx="16" cy="22" rx="9" ry="6" fill="#e50914" />
-        {/* Head */}
-        <circle cx="24" cy="16" r="5" fill="#e50914" />
-        {/* Beak */}
-        <polygon points="29,15 34,16 29,17" fill="#fff" />
-        {/* Eye */}
-        <circle cx="25.5" cy="15" r="1.2" fill="#fff" />
-        <circle cx="25.8" cy="14.8" r="0.5" fill="#111" />
-        {/* Wing */}
-        <path d="M10,20 Q4,12 12,14 Q8,18 14,18 Z" fill="#c0000a" />
-        {/* Tail */}
-        <path d="M7,22 Q2,18 4,24 Q6,20 8,24 Z" fill="#c0000a" />
-        {/* Legs */}
-        <line x1="14" y1="28" x2="12" y2="34" stroke="#e50914" strokeWidth="1.5" strokeLinecap="round" />
-        <line x1="18" y1="28" x2="18" y2="34" stroke="#e50914" strokeWidth="1.5" strokeLinecap="round" />
-        <line x1="12" y1="34" x2="10" y2="36" stroke="#e50914" strokeWidth="1.2" strokeLinecap="round" />
-        <line x1="12" y1="34" x2="14" y2="36" stroke="#e50914" strokeWidth="1.2" strokeLinecap="round" />
-        <line x1="18" y1="34" x2="16" y2="36" stroke="#e50914" strokeWidth="1.2" strokeLinecap="round" />
-        <line x1="18" y1="34" x2="20" y2="36" stroke="#e50914" strokeWidth="1.2" strokeLinecap="round" />
-      </g>
+      <defs>
+        <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#ff1a1a" />
+          <stop offset="100%" stopColor="#b30000" />
+        </linearGradient>
+        <linearGradient id="textGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="100%" stopColor="#cccccc" />
+        </linearGradient>
+        <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+          <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000" floodOpacity="0.4" />
+        </filter>
+      </defs>
 
-      {/* Algaid text */}
+      {/* Icon background — rounded square */}
+      <rect x="0" y="2" width="36" height="36" rx="8" fill="url(#redGrad)" filter="url(#shadow)" />
+
+      {/* Film strip holes */}
+      <rect x="3" y="6" width="4" height="4" rx="1" fill="rgba(0,0,0,0.4)" />
+      <rect x="3" y="13" width="4" height="4" rx="1" fill="rgba(0,0,0,0.4)" />
+      <rect x="3" y="20" width="4" height="4" rx="1" fill="rgba(0,0,0,0.4)" />
+      <rect x="3" y="27" width="4" height="4" rx="1" fill="rgba(0,0,0,0.4)" />
+      <rect x="29" y="6" width="4" height="4" rx="1" fill="rgba(0,0,0,0.4)" />
+      <rect x="29" y="13" width="4" height="4" rx="1" fill="rgba(0,0,0,0.4)" />
+      <rect x="29" y="20" width="4" height="4" rx="1" fill="rgba(0,0,0,0.4)" />
+      <rect x="29" y="27" width="4" height="4" rx="1" fill="rgba(0,0,0,0.4)" />
+
+      {/* Play triangle */}
+      <polygon points="13,11 13,29 27,20" fill="white" opacity="0.95" />
+
+      {/* "Algaid" text */}
       <text
-        x="42"
-        y="28"
-        fontFamily="Roboto, Arial, sans-serif"
-        fontSize="22"
-        fontWeight="700"
-        fill="#ffffff"
-        letterSpacing="0.5"
+        x="44"
+        y="29"
+        fontFamily="'Arial Black', 'Helvetica Neue', Arial, sans-serif"
+        fontSize="23"
+        fontWeight="900"
+        fill="url(#textGrad)"
+        letterSpacing="-0.5"
       >
         Algaid
       </text>
 
-      {/* Hub text in red */}
+      {/* "Hub" text in red with slight italic */}
       <text
-        x="114"
-        y="28"
-        fontFamily="Roboto, Arial, sans-serif"
-        fontSize="22"
-        fontWeight="700"
-        fill="#e50914"
-        letterSpacing="0.5"
+        x="122"
+        y="29"
+        fontFamily="'Arial Black', 'Helvetica Neue', Arial, sans-serif"
+        fontSize="23"
+        fontWeight="900"
+        fill="url(#redGrad)"
+        letterSpacing="-0.5"
+        fontStyle="italic"
       >
         Hub
       </text>
+
+      {/* Underline accent */}
+      <rect x="44" y="32" width="152" height="2.5" rx="1.25" fill="url(#redGrad)" opacity="0.6" />
     </svg>
   );
 }
