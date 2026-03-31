@@ -42,7 +42,7 @@ export default function WatchTV() {
         style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 1) {
-      return <iframe key={`ae-${id}-${s}-${e}`} src={`https://autoembed.co/tv/${id}-${s}-${e}`}
+      return <iframe key={`ae-${id}-${s}-${e}`} src={`https://player.autoembed.app/embed/tv/${id}-${s}-${e}`}
         style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 2) {

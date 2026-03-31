@@ -55,7 +55,7 @@ export default function Watch() {
 
   const renderPlayer=()=>{
     if(activeServer===0)return <iframe key={"vl"+id} src={"https://vidlink.pro/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
-    if(activeServer===1)return <iframe key={"ae"+id} src={"https://autoembed.co/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    if(activeServer===1)return <iframe key={"ae"+id} src={"https://player.autoembed.app/embed/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     if(activeServer===2){if(!imdbId)return <div style={styles.noVideo}><p>Not found on VidSrc.me</p></div>;return <iframe key={"vm"+imdbId} src={"https://vidsrc.me/embed/movie?imdb="+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
     if(activeServer===3){if(!imdbId)return <div style={styles.noVideo}><p>Not found on Embed.su</p></div>;return <iframe key={"es"+imdbId} src={"https://embed.su/embed/movie/"+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
     if(activeServer===4){
