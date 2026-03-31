@@ -19,9 +19,9 @@ export function AppProvider({ children }) {
   const [user, setUser] = useState(() => {
     try {
       const u = JSON.parse(localStorage.getItem("algaid_user"));
-      // Update old sessions that have emoji avatar to use the image
-      if (u && (u.avatar === "🎬" || !u.avatar)) {
-        u.avatar = "/avatar.jpg";
+      // Update old sessions that have film avatar to use the bird
+      if (u && (u.avatar === "🎬" || u.avatar === "/avatar.jpg" || !u.avatar)) {
+        u.avatar = "🦅";
         localStorage.setItem("algaid_user", JSON.stringify(u));
       }
       return u;
@@ -37,7 +37,7 @@ export function AppProvider({ children }) {
   });
 
   const login = (userData) => {
-    const u = { ...userData, avatar: userData.avatar || "/avatar.jpg" };
+    const u = { ...userData, avatar: userData.avatar || "🦅" };
     setIsLoggedIn(true);
     setUser(u);
     localStorage.setItem("algaid_user", JSON.stringify(u));

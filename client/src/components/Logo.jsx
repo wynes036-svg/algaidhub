@@ -1,19 +1,32 @@
-import birdImg from "/avatar.jpg";
-
 export default function Logo({ size = 36 }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-      <img
-        src={birdImg}
-        alt="AlgaidHub"
-        style={{
-          width: size,
-          height: size,
-          borderRadius: "8px",
-          objectFit: "cover",
-          border: "2px solid #e50914",
-        }}
-      />
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 64 64"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-label="AlgaidHub bird logo"
+      >
+        {/* Body */}
+        <path d="M12 38 C14 28 26 22 36 26 C46 30 50 40 44 50 C38 58 20 56 14 48 C10 44 10 42 12 38Z" fill="#e50914" />
+        {/* Wing highlight */}
+        <path d="M16 36 C20 28 32 26 38 32 C30 30 22 34 20 42Z" fill="#ff2a36" />
+        {/* Head */}
+        <circle cx="42" cy="22" r="10" fill="#e50914" />
+        {/* Neck connect */}
+        <path d="M36 26 C37 20 40 18 44 20 C46 26 44 30 40 30Z" fill="#e50914" />
+        {/* Tail feathers */}
+        <path d="M14 48 C8 54 4 60 8 62 C12 58 16 54 18 50Z" fill="#c0060f" />
+        <path d="M18 50 C14 56 12 63 16 64 C19 60 22 55 22 50Z" fill="#b0050e" />
+        {/* Beak */}
+        <path d="M52 20 L60 22 L52 25 Z" fill="#ffcc00" />
+        {/* Eye */}
+        <circle cx="44" cy="20" r="3" fill="white" />
+        <circle cx="45" cy="20" r="1.5" fill="#111" />
+        <circle cx="45.5" cy="19.5" r="0.5" fill="white" />
+      </svg>
       <span style={{
         fontFamily: "'Arial Black', 'Helvetica Neue', Arial, sans-serif",
         fontSize: size * 0.6,
