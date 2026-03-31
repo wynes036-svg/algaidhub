@@ -88,6 +88,15 @@ export default function WatchTV() {
           </div>
         </div>
 
+        {/* Player */}
+        <div className="watch-player">
+          <div style={{...styles.playerWrap, position:"relative"}}>
+            {renderPlayer()}
+            <SkipButton runtime={show?.episode_run_time?.[0] || 45} />
+          </div>
+        </div>
+
+        {/* Server bar — bottom */}
         <div style={styles.serverBar}>
           <span style={styles.serverLabel}>Server:</span>
           {SERVERS.map((sv, i) => (
@@ -96,7 +105,6 @@ export default function WatchTV() {
               {sv}
             </button>
           ))}
-          {/* SUB/DUB toggle — always visible for anime, available on 2embed server */}
           {(isAnime || activeServer === 1) && (
             <div style={styles.langToggle}>
               <button onClick={() => setLang("sub")}
@@ -122,13 +130,6 @@ export default function WatchTV() {
           <button style={styles.navBtn} onClick={() => navigate(`/watch/tv/${id}/${s}/${e + 1}`)}>
             Next Episode →
           </button>
-        </div>
-
-        <div className="watch-player">
-          <div style={{...styles.playerWrap, position:"relative"}}>
-            {renderPlayer()}
-            <SkipButton runtime={show?.episode_run_time?.[0] || 45} />
-          </div>
         </div>
       </div>
     </>

@@ -78,15 +78,15 @@ export default function Watch() {
             {movie&&<button onClick={()=>favorited?removeFavorite(movie.id):addFavorite(movie)} style={{...styles.controlBtn,color:favorited?"#e50914":"#fff"}}>{favorited?"Saved":"My List"}</button>}
           </div>
         </div>
-        <div style={styles.serverBar}>
-          <span style={styles.serverLabel}>Server:</span>
-          {SERVERS.map((s,i)=>(<button key={s} onClick={()=>setActiveServer(i)} style={{...styles.serverBtn,...(activeServer===i?styles.serverBtnActive:{})}}>{s}</button>))}
-        </div>
         <div className="watch-player">
           <div style={{...styles.playerWrap,position:"relative"}}>
             {renderPlayer()}
             <SkipButton runtime={movie?.runtime||120} />
           </div>
+        </div>
+        <div style={styles.serverBar}>
+          <span style={styles.serverLabel}>Server:</span>
+          {SERVERS.map((s,i)=>(<button key={s} onClick={()=>setActiveServer(i)} style={{...styles.serverBtn,...(activeServer===i?styles.serverBtnActive:{})}}>{s}</button>))}
         </div>
       </div>
     </>
@@ -95,7 +95,7 @@ export default function Watch() {
 
 const styles={
   controlBtn:{background:"rgba(255,255,255,0.1)",color:"#fff",border:"none",padding:"8px 14px",borderRadius:"4px",cursor:"pointer",fontSize:"13px"},
-  serverBar:{background:"#111",padding:"12px 24px",display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap"},
+  serverBar:{background:"#111",padding:"12px 24px",display:"flex",alignItems:"center",gap:"8px",flexWrap:"wrap",borderTop:"1px solid #1a1a1a"},
   serverLabel:{color:"#e50914",fontSize:"13px",marginRight:"4px",fontWeight:"600"},
   serverBtn:{background:"#2a2a2a",color:"#e50914",border:"1px solid #2a2a2a",padding:"8px 18px",borderRadius:"5px",cursor:"pointer",fontSize:"13px"},
   serverBtnActive:{background:"#e50914",color:"#fff",border:"1px solid #e50914"},
