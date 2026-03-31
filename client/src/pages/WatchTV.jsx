@@ -4,7 +4,7 @@ import { useApp } from "../context/AppContext";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
-const SERVERS = ["VidLink", "2embed (Anime)", "VidSrc.me", "Embed.su", "YouTube Trailer"];
+const SERVERS = ["VidLink", "AutoEmbed", "2embed (Anime)", "VidSrc.me", "Embed.su", "YouTube Trailer"];
 
 export default function WatchTV() {
   const { id, season, episode } = useParams();
@@ -38,21 +38,24 @@ export default function WatchTV() {
 
   const renderPlayer = () => {
     if (activeServer === 0) {
-      return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&muted=false`}
+      return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}`}
         style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 1) {
-      // 2embed with sub/dub toggle for anime
+      return <iframe key={`ae-${id}-${s}-${e}`} src={`https://autoembed.to/tv/tmdb/${id}-${s}-${e}`}
+        style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    }
+    if (activeServer === 2) {
       const dubParam = lang === "dub" ? "&dubbing=1" : "";
       return <iframe key={`2e-${id}-${s}-${e}-${lang}`}
         src={`https://www.2embed.cc/embedtvfull/${id}&s=${s}&e=${e}${dubParam}`}
         style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
-    if (activeServer === 2) {
+    if (activeServer === 3) {
       return <iframe key={`vm-${id}-${s}-${e}`} src={`https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}`}
           style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
-    if (activeServer === 3) {
+    if (activeServer === 4) {
       return imdbId
         ? <iframe key={`es-${imdbId}-${s}-${e}`} src={`https://embed.su/embed/tv/${imdbId}/${s}/${e}`}
             style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />
@@ -103,7 +106,7 @@ export default function WatchTV() {
               {sv}
             </button>
           ))}
-          {(isAnime || activeServer === 1) && (
+          {(isAnime || activeServer === 2) && (
             <div style={styles.langToggle}>
               <button onClick={() => setLang("sub")}
                 style={{ ...styles.langBtn, ...(lang === "sub" ? styles.langBtnActive : {}) }}>
