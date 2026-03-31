@@ -6,7 +6,7 @@ import FullscreenButton from "../components/FullscreenButton";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
-const SERVERS = ["VidLink", "2embed (Anime)", "VidSrc.me", "Embed.su", "YouTube Trailer"];
+const SERVERS = ["VidLink", "2embed (Anime)", "VidSrc.me", "Embed.su", "AniWatch (Sub/Dub)", "YouTube Trailer"];
 
 export default function WatchTV() {
   const { id, season, episode } = useParams();
@@ -75,6 +75,13 @@ export default function WatchTV() {
       return <iframe key={`es-${imdbId}-${s}-${e}`} src={`https://embed.su/embed/tv/${imdbId}/${s}/${e}`}
         style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
+    if (activeServer === 4) {
+      // AniWatch supports both sub and dub via vidsrc.to
+      const dubParam = lang === "dub" ? "&dubbed=1" : "";
+      return <iframe key={`aw-${id}-${s}-${e}-${lang}`}
+        src={`https://vidsrc.to/embed/tv/${id}/${s}/${e}${dubParam}`}
+        style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    }
     if (!trailer) return <div style={styles.noVideo}><p>No trailer available.</p></div>;
     return <iframe src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1`}
       title={show?.name} style={styles.iframe} allow="autoplay; fullscreen" allowFullScreen />;
@@ -114,7 +121,7 @@ export default function WatchTV() {
               {sv}
             </button>
           ))}
-          {(isAnime || activeServer === 1) && (
+          {(isAnime || activeServer === 1 || activeServer === 4) && (
             <div style={styles.langToggle}>
               <button onClick={() => setLang("sub")} style={{ ...styles.langBtn, ...(lang === "sub" ? styles.langBtnActive : {}) }}>SUB</button>
               <button onClick={() => setLang("dub")} style={{ ...styles.langBtn, ...(lang === "dub" ? styles.langBtnActive : {}) }}>DUB</button>
