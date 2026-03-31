@@ -5,7 +5,7 @@ import SkipButton from "../components/SkipButton";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
-const SERVERS = ["VidLink", "VidSrc.me", "Embed.su", "YouTube Trailer"];
+const SERVERS = ["VidLink", "2embed (Anime)", "VidSrc.me", "Embed.su", "YouTube Trailer"];
 
 export default function WatchTV() {
   const { id, season, episode } = useParams();
@@ -16,8 +16,12 @@ export default function WatchTV() {
   const [trailer, setTrailer] = useState(null);
   const [activeServer, setActiveServer] = useState(0);
   const [lightOff, setLightOff] = useState(false);
+  const [lang, setLang] = useState("sub"); // sub or dub
   const s = Number(season) || 1;
   const e = Number(episode) || 1;
+
+  // Check if show is anime (genre 16 = Animation, or origin country JP)
+  const isAnime = show?.genres?.some(g => g.id === 16) || show?.origin_country?.includes("JP");
 
   useEffect(() => {
     fetch(`${BASE_URL}/tv/${id}?api_key=${API_KEY}&append_to_response=videos,external_ids`)
@@ -35,16 +39,21 @@ export default function WatchTV() {
 
   const renderPlayer = () => {
     if (activeServer === 0) {
-      // VidLink supports TV: /tv/{id}/{season}/{episode}
       return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}`}
         style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 1) {
-      // Use TMDB ID directly - more reliable for TV shows
+      // 2embed with sub/dub toggle for anime
+      const dubParam = lang === "dub" ? "&dubbing=1" : "";
+      return <iframe key={`2e-${id}-${s}-${e}-${lang}`}
+        src={`https://www.2embed.cc/embedtvfull/${id}&s=${s}&e=${e}${dubParam}`}
+        style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    }
+    if (activeServer === 2) {
       return <iframe key={`vm-${id}-${s}-${e}`} src={`https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}`}
           style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
-    if (activeServer === 2) {
+    if (activeServer === 3) {
       return imdbId
         ? <iframe key={`es-${imdbId}-${s}-${e}`} src={`https://embed.su/embed/tv/${imdbId}/${s}/${e}`}
             style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />
@@ -87,6 +96,19 @@ export default function WatchTV() {
               {sv}
             </button>
           ))}
+          {/* SUB/DUB toggle — always visible for anime, available on 2embed server */}
+          {(isAnime || activeServer === 1) && (
+            <div style={styles.langToggle}>
+              <button onClick={() => setLang("sub")}
+                style={{ ...styles.langBtn, ...(lang === "sub" ? styles.langBtnActive : {}) }}>
+                SUB
+              </button>
+              <button onClick={() => setLang("dub")}
+                style={{ ...styles.langBtn, ...(lang === "dub" ? styles.langBtnActive : {}) }}>
+                DUB
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Episode navigation */}
@@ -121,6 +143,9 @@ const styles = {
   serverBtnActive: { background: "#e50914", color: "#fff", border: "1px solid #e50914" },
   epNav: { background: "#0a0a0a", padding: "10px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" },
   navBtn: { background: "#1a1a1a", color: "#ccc", border: "1px solid #333", padding: "8px 16px", borderRadius: "4px", cursor: "pointer", fontSize: "13px" },
+  langToggle: { marginLeft: "auto", display: "flex", background: "#2a2a2a", borderRadius: "6px", overflow: "hidden", border: "1px solid #e50914" },
+  langBtn: { background: "transparent", color: "#e50914", border: "none", padding: "6px 16px", cursor: "pointer", fontSize: "13px", fontWeight: "600" },
+  langBtnActive: { background: "#e50914", color: "#fff" },
   playerWrap: { position: "relative", width: "100%", maxWidth: "1200px", aspectRatio: "16/9", background: "#000", borderRadius: "8px", overflow: "hidden", margin: "0 auto" },
   iframe: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" },
   noVideo: { textAlign: "center", color: "#aaa", padding: "60px 20px", fontSize: "16px" },
