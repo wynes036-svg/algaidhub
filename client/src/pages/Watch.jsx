@@ -6,8 +6,7 @@ import SkipButton from "../components/SkipButton";
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
 const VIDEO_SERVER = "http://localhost:3001";
-const SERVERS = ["VidLink", "MegaCloud", "VidSrc.me", "MultiEmbed", "Embed.su", "My Server", "YouTube Trailer"];
-const SANDBOX = "allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen";
+const SERVERS = ["VidLink", "VidSrc.me", "Embed.su", "My Server", "YouTube Trailer"];
 
 export default function Watch() {
   const { id } = useParams();
@@ -39,7 +38,7 @@ export default function Watch() {
     const totalSeconds=(movie.runtime||120)*60;
     clearInterval(timerRef.current);
     elapsedRef.current=0;
-    if(activeServer===5)return;
+    if(activeServer===3)return;
     updateProgress(movie,1);
     timerRef.current=setInterval(()=>{
       elapsedRef.current+=10;
@@ -57,11 +56,9 @@ export default function Watch() {
 
   const renderPlayer=()=>{
     if(activeServer===0)return <iframe key={"vl"+id} src={"https://vidlink.pro/movie/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
-    if(activeServer===1)return <iframe key={"mc"+id} src={"https://megacloud.tv/embed-2/e-1/"+id} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
-    if(activeServer===2){if(!imdbId)return <div style={styles.noVideo}><p>Not found on VidSrc.me</p></div>;return <iframe key={"vm"+imdbId} src={"https://vidsrc.me/embed/movie?imdb="+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
-    if(activeServer===3)return <iframe key={"me"+id} src={"https://multiembed.mov/?video_id="+id+"&tmdb=1"} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
-    if(activeServer===4){if(!imdbId)return <div style={styles.noVideo}><p>Not found on Embed.su</p></div>;return <iframe key={"es"+imdbId} src={"https://embed.su/embed/movie/"+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
-    if(activeServer===5){
+    if(activeServer===1){if(!imdbId)return <div style={styles.noVideo}><p>Not found on VidSrc.me</p></div>;return <iframe key={"vm"+imdbId} src={"https://vidsrc.me/embed/movie?imdb="+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
+    if(activeServer===2){if(!imdbId)return <div style={styles.noVideo}><p>Not found on Embed.su</p></div>;return <iframe key={"es"+imdbId} src={"https://embed.su/embed/movie/"+imdbId} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;}
+    if(activeServer===3){
       if(!videoUrl)return <div style={styles.noVideo}><p>No video file found.</p></div>;
       return <video ref={videoRef} key={videoUrl} controls autoPlay onTimeUpdate={e=>{const{currentTime,duration}=e.target;if(duration&&movie){const pct=Math.round((currentTime/duration)*100);if(pct%5===0)updateProgress(movie,pct)}}} style={{width:"100%",height:"100%",background:"#000"}}><source src={videoUrl} type={videoUrl.endsWith(".m3u8")?"application/x-mpegURL":"video/mp4"} /></video>;
     }

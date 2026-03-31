@@ -5,7 +5,7 @@ import SkipButton from "../components/SkipButton";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
-const SERVERS = ["VidLink", "VidSrc.me", "MultiEmbed", "Embed.su", "YouTube Trailer"];
+const SERVERS = ["VidLink", "VidSrc.me", "Embed.su", "YouTube Trailer"];
 const SANDBOX = "allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen";
 
 export default function WatchTV() {
@@ -49,10 +49,6 @@ export default function WatchTV() {
             style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 2) {
-      return <iframe key={`me-${id}-${s}-${e}`} src={`https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`}
-        style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
-    }
-    if (activeServer === 3) {
       return imdbId
         ? <iframe key={`es-${imdbId}-${s}-${e}`} src={`https://embed.su/embed/tv/${imdbId}/${s}/${e}`}
             style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />
