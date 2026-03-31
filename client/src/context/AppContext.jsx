@@ -16,9 +16,13 @@ const removeProgress = (movieId) => {
 };
 
 export function AppProvider({ children }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState(null);
-  const [favorites, setFavorites] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem("algaid_user"));
+  const [user, setUser] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("algaid_user")); } catch { return null; }
+  });
+  const [favorites, setFavorites] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("algaid_favorites") || "[]"); } catch { return []; }
+  });
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [continueWatching, setContinueWatching] = useState(() => {
     const p = getProgress();
@@ -26,25 +30,35 @@ export function AppProvider({ children }) {
   });
 
   const login = (userData) => {
+    const u = { ...userData, avatar: userData.avatar || "🎬" };
     setIsLoggedIn(true);
-    setUser({ ...userData, avatar: userData.avatar || "🎬" });
+    setUser(u);
+    localStorage.setItem("algaid_user", JSON.stringify(u));
     setShowLoginModal(false);
   };
 
   const logout = () => {
     setIsLoggedIn(false);
     setUser(null);
+    localStorage.removeItem("algaid_user");
   };
 
   const addFavorite = (movie) => {
     if (!isLoggedIn) { setShowLoginModal(true); return; }
-    setFavorites((prev) =>
-      prev.find((m) => m.id === movie.id) ? prev : [...prev, movie]
-    );
+    setFavorites((prev) => {
+      if (prev.find((m) => m.id === movie.id)) return prev;
+      const updated = [...prev, movie];
+      localStorage.setItem("algaid_favorites", JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const removeFavorite = (id) => {
-    setFavorites((prev) => prev.filter((m) => m.id !== id));
+    setFavorites((prev) => {
+      const updated = prev.filter((m) => m.id !== id);
+      localStorage.setItem("algaid_favorites", JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const isFavorite = (id) => favorites.some((m) => m.id === id);
@@ -65,7 +79,11 @@ export function AppProvider({ children }) {
   };
 
   const updateAvatar = (avatar) => {
-    setUser((prev) => ({ ...prev, avatar }));
+    setUser((prev) => {
+      const updated = { ...prev, avatar };
+      localStorage.setItem("algaid_user", JSON.stringify(updated));
+      return updated;
+    });
   };
 
   return (
