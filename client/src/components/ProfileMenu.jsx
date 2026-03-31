@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 
 const AVATARS = [
-  "🦅", "🐦", "🐉", "🦁", "🐺", "🦊", "🎭", "👾", "🤖", "🧙", "🦸", "🎃"
+  "🐦", "🐉", "🦁", "🐺", "🦊", "🎭", "👾", "🤖", "🧙", "🦸", "🎃", "🐯"
 ];
 
 // SVG icon components
@@ -53,10 +53,13 @@ export default function ProfileMenu() {
   }, []);
 
   const renderAvatar = (av, size = 20) => {
+    if (!av || av === "🦅") {
+      return <img src="/avatar.jpg" alt="avatar" style={{ width: size, height: size, objectFit: "cover", borderRadius: "4px" }} />;
+    }
     if (av?.startsWith("/") || av?.startsWith("http")) {
       return <img src={av} alt="avatar" style={{ width: size, height: size, objectFit: "cover", borderRadius: "4px" }} />;
     }
-    return <span style={{ fontSize: size * 0.9 }}>{av || "🦅"}</span>;
+    return <span style={{ fontSize: size * 0.9 }}>{av}</span>;
   };
 
   return (
