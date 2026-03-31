@@ -94,14 +94,14 @@ export default function TVShows() {
                   <img
                     src={show.poster_path ? `${IMG_BASE}${show.poster_path}` : "https://via.placeholder.com/150x220?text=No+Image"}
                     alt={show.name}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }}
                   />
-                  <div style={styles.overlay} />
                   {show.vote_average > 0 && (
                     <span style={styles.badge}>{show.vote_average.toFixed(1)}</span>
                   )}
-                  <div style={styles.titleOverlay}>{show.name}</div>
                 </div>
+                <div style={styles.titleBelow}>{show.name}</div>
+                <div style={styles.year}>{show.first_air_date?.slice(0, 4)}</div>
               </div>
             ))}
           </div>
@@ -146,26 +146,17 @@ const styles = {
   },
   card: { cursor: "pointer", position: "relative" },
   poster: {
-    width: "100%", paddingBottom: "148%", position: "relative",
+    width: "100%", height: "220px", position: "relative",
     borderRadius: "8px", overflow: "hidden",
-  },
-  overlay: {
-    position: "absolute", inset: 0, background: "rgba(0,0,0,0)",
-    transition: "background 0.2s",
   },
   badge: {
     position: "absolute", top: "8px", right: "8px",
     background: "#e50914", color: "#fff",
     fontSize: "11px", fontWeight: "700", padding: "3px 6px", borderRadius: "3px",
   },
-  titleOverlay: {
-    position: "absolute", bottom: 0, left: 0, right: 0,
-    background: "linear-gradient(transparent, rgba(0,0,0,0.85))",
-    padding: "20px 8px 8px", fontSize: "12px", color: "#fff", fontWeight: "500",
-  },
-  title: {
-    fontSize: "13px", color: "#ddd", fontWeight: "400",
-    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+  titleBelow: {
+    fontSize: "13px", color: "#ddd", fontWeight: "500",
+    marginTop: "6px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
   },
   year: { fontSize: "11px", color: "#888", marginTop: "2px" },
   pagination: { display: "flex", justifyContent: "center", gap: "6px", flexWrap: "wrap" },
