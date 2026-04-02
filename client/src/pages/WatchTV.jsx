@@ -72,7 +72,7 @@ export default function WatchTV() {
 
   const renderPlayer = () => {
     if (activeServer === 0)
-      return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+      return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&primaryColor=e50914`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     if (activeServer === 1) {
       const dubParam = lang === "dub" ? "&dubbing=1" : "";
       return <iframe key={`2e-${id}-${s}-${e}-${lang}`} src={`https://www.2embed.cc/embedtvfull/${id}&s=${s}&e=${e}${dubParam}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;

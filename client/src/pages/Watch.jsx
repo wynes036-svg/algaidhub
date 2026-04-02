@@ -82,7 +82,7 @@ export default function Watch() {
 
   const renderPlayer = () => {
     if (activeServer === 0)
-      return <iframe key={"vl"+id} src={`https://vidlink.pro/movie/${id}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+      return <iframe key={"vl"+id} src={`https://vidlink.pro/movie/${id}?autoplay=true&primaryColor=e50914`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     if (activeServer === 1) {
       if (!imdbId) return <div style={styles.noVideo}><p>Not found on VidSrc.me</p></div>;
       return <iframe key={"vm"+imdbId} src={`https://vidsrc.me/embed/movie?imdb=${imdbId}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
