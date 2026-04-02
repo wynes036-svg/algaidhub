@@ -56,6 +56,25 @@ export default function Watch() {
 
   useEffect(() => () => clearInterval(timerRef.current), []);
 
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      const video = videoRef.current;
+      if (e.code === "Space") {
+        e.preventDefault();
+        if (video) video.paused ? video.play() : video.pause();
+      } else if (e.code === "ArrowRight") {
+        e.preventDefault();
+        if (video) video.currentTime = Math.min(video.currentTime + 10, video.duration || 0);
+      } else if (e.code === "ArrowLeft") {
+        e.preventDefault();
+        if (video) video.currentTime = Math.max(video.currentTime - 10, 0);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
+
   const favorited = movie && isFavorite(movie.id);
   const matchedVideo = serverVideos.find(
     (f) => f.startsWith(id) || f.toLowerCase().includes((movie?.title || "").toLowerCase().slice(0, 10))

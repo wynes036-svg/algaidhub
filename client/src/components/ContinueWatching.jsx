@@ -16,15 +16,21 @@ export default function ContinueWatching() {
       </div>
       <div className="film_list-wrap">
         {continueWatching.map((movie) => (
-          <div key={movie.id} style={styles.card}>
-            <div style={styles.poster} onClick={() => navigate(`/watch/${movie.id}`)}>
+          <div key={movie.id} className="flw-item" onClick={() => navigate(`/watch/${movie.id}`)}>
+            <div className="film-poster" style={{ position: "relative" }}>
               <img
-                src={movie.backdrop_path ? `${IMG_BASE}${movie.backdrop_path}` : "https://via.placeholder.com/300x170?text=No+Image"}
+                src={
+                  movie.poster_path
+                    ? `${IMG_BASE}${movie.poster_path}`
+                    : "https://placehold.co/160x237/1a1a1a/555?text=No+Image"
+                }
                 alt={movie.title}
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
-              <div style={styles.overlay}>
-                <div style={styles.playBtn}>▶</div>
+              <div className="film-poster-overlay">
+                <button
+                  className="play-btn"
+                  onClick={(e) => { e.stopPropagation(); navigate(`/watch/${movie.id}`); }}
+                >▶</button>
               </div>
               {/* Progress bar */}
               <div style={styles.progressBg}>
@@ -37,9 +43,9 @@ export default function ContinueWatching() {
                 title="Remove"
               >✕</button>
             </div>
-            <div style={{ padding: "6px 2px 0" }}>
-              <div style={styles.title}>{movie.title}</div>
-              <div style={styles.percent}>{movie.percent || 0}% watched</div>
+            <div className="film-detail">
+              <div className="film-name">{movie.title}</div>
+              <div className="film-infor">{movie.release_date?.slice(0, 4)}</div>
             </div>
           </div>
         ))}
@@ -49,22 +55,6 @@ export default function ContinueWatching() {
 }
 
 const styles = {
-  card: { minWidth: "200px", flexShrink: 0, cursor: "pointer" },
-  poster: {
-    width: "200px", height: "112px", position: "relative",
-    borderRadius: "6px", overflow: "hidden",
-  },
-  overlay: {
-    position: "absolute", inset: 0, background: "rgba(0,0,0,0)",
-    display: "flex", alignItems: "center", justifyContent: "center",
-    transition: "background 0.2s",
-  },
-  playBtn: {
-    width: "40px", height: "40px", borderRadius: "50%",
-    background: "#e50914", color: "#fff", display: "flex",
-    alignItems: "center", justifyContent: "center",
-    fontSize: "16px", opacity: 0, transition: "opacity 0.2s",
-  },
   progressBg: {
     position: "absolute", bottom: 0, left: 0, right: 0,
     height: "4px", background: "rgba(255,255,255,0.2)",
@@ -77,12 +67,6 @@ const styles = {
     background: "rgba(0,0,0,0.7)", color: "#fff", border: "none",
     borderRadius: "50%", width: "22px", height: "22px",
     fontSize: "11px", cursor: "pointer", display: "flex",
-    alignItems: "center", justifyContent: "center",
+    alignItems: "center", justifyContent: "center", zIndex: 10,
   },
-  title: {
-    fontSize: "13px", color: "#ddd", fontWeight: "400",
-    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-    maxWidth: "200px",
-  },
-  percent: { fontSize: "11px", color: "#e50914", marginTop: "2px" },
 };

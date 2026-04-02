@@ -12,12 +12,8 @@ export default function ContinueWatchingPage() {
     <>
       <Navbar />
       <div id="main-wrapper" style={{ padding: "30px 4%" }}>
-        <h1 style={{ fontSize: "28px", fontWeight: "300", marginBottom: "8px" }}>
-          Continue Watching
-        </h1>
-        <p style={{ color: "#888", fontSize: "14px", marginBottom: "30px" }}>
-          Pick up where you left off
-        </p>
+        <h1 style={{ fontSize: "28px", fontWeight: "300", marginBottom: "8px" }}>Continue Watching</h1>
+        <p style={{ color: "#888", fontSize: "14px", marginBottom: "30px" }}>Pick up where you left off</p>
 
         {continueWatching.length === 0 ? (
           <div style={{ textAlign: "center", color: "#666", padding: "80px 0" }}>
@@ -32,17 +28,23 @@ export default function ContinueWatchingPage() {
             </button>
           </div>
         ) : (
-          <div style={styles.grid}>
+          <div className="film_list-wrap" style={{ flexWrap: "wrap" }}>
             {continueWatching.map((movie) => (
-              <div key={movie.id} style={styles.card}>
-                <div style={styles.posterWrap} onClick={() => navigate(`/watch/${movie.id}`)}>
+              <div key={movie.id} className="flw-item" onClick={() => navigate(`/watch/${movie.id}`)}>
+                <div className="film-poster" style={{ position: "relative" }}>
                   <img
-                    src={movie.backdrop_path ? `${IMG_BASE}${movie.backdrop_path}` : "https://via.placeholder.com/300x170?text=No+Image"}
+                    src={
+                      movie.poster_path
+                        ? `${IMG_BASE}${movie.poster_path}`
+                        : "https://placehold.co/160x237/1a1a1a/555?text=No+Image"
+                    }
                     alt={movie.title}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   />
-                  <div style={styles.overlay}>
-                    <div style={styles.playBtn}>▶</div>
+                  <div className="film-poster-overlay">
+                    <button
+                      className="play-btn"
+                      onClick={(e) => { e.stopPropagation(); navigate(`/watch/${movie.id}`); }}
+                    >▶</button>
                   </div>
                   {/* Progress bar */}
                   <div style={styles.progressBg}>
@@ -51,20 +53,12 @@ export default function ContinueWatchingPage() {
                   <button
                     style={styles.removeBtn}
                     onClick={(e) => { e.stopPropagation(); removeFromContinue(movie.id); }}
+                    title="Remove"
                   >✕</button>
                 </div>
-                <div style={{ padding: "10px 4px 0" }}>
-                  <div style={styles.title}>{movie.title}</div>
-                  <div style={styles.meta}>
-                    <span style={{ color: "#e50914" }}>{movie.percent || 0}% watched</span>
-                    <span style={{ color: "#666", marginLeft: "8px" }}>{movie.release_date?.slice(0, 4)}</span>
-                  </div>
-                  <button
-                    onClick={() => navigate(`/watch/${movie.id}`)}
-                  style={styles.resumeBtn}
-                  >
-                    ▶ Resume
-                  </button>
+                <div className="film-detail">
+                  <div className="film-name">{movie.title}</div>
+                  <div className="film-infor">{movie.release_date?.slice(0, 4)}</div>
                 </div>
               </div>
             ))}
@@ -76,46 +70,18 @@ export default function ContinueWatchingPage() {
 }
 
 const styles = {
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-    gap: "24px",
-  },
-  card: { cursor: "pointer" },
-  posterWrap: {
-    width: "100%", paddingBottom: "56.25%", position: "relative",
-    borderRadius: "8px", overflow: "hidden",
-  },
-  overlay: {
-    position: "absolute", inset: 0, background: "rgba(0,0,0,0)",
-    display: "flex", alignItems: "center", justifyContent: "center",
-    transition: "background 0.2s",
-  },
-  playBtn: {
-    width: "50px", height: "50px", borderRadius: "50%",
-    background: "#e50914", color: "#fff", display: "flex",
-    alignItems: "center", justifyContent: "center", fontSize: "18px",
-    opacity: 0, transition: "opacity 0.2s",
-  },
   progressBg: {
     position: "absolute", bottom: 0, left: 0, right: 0,
     height: "4px", background: "rgba(255,255,255,0.2)",
   },
-  progressFill: { height: "100%", background: "#e50914" },
+  progressFill: {
+    height: "100%", background: "#e50914", transition: "width 0.3s",
+  },
   removeBtn: {
-    position: "absolute", top: "8px", right: "8px",
+    position: "absolute", top: "6px", right: "6px",
     background: "rgba(0,0,0,0.7)", color: "#fff", border: "none",
-    borderRadius: "50%", width: "26px", height: "26px",
-    fontSize: "12px", cursor: "pointer",
-  },
-  title: {
-    fontSize: "15px", fontWeight: "500", color: "#fff",
-    marginBottom: "4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-  },
-  meta: { fontSize: "13px", marginBottom: "10px" },
-  resumeBtn: {
-    background: "#e50914", color: "#fff", border: "none",
-    padding: "8px 20px", borderRadius: "4px", cursor: "pointer",
-    fontSize: "13px", fontWeight: "600", width: "100%",
+    borderRadius: "50%", width: "22px", height: "22px",
+    fontSize: "11px", cursor: "pointer", display: "flex",
+    alignItems: "center", justifyContent: "center", zIndex: 10,
   },
 };

@@ -53,6 +53,17 @@ export default function WatchTV() {
 
   useEffect(() => () => clearInterval(timerRef.current), []);
 
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if (e.code === "Space" || e.code === "ArrowRight" || e.code === "ArrowLeft") {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
+
   const favorited = show && isFavorite(Number(id));
 
   const renderPlayer = () => {
