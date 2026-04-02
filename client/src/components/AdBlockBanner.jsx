@@ -1,12 +1,29 @@
 import { useState, useEffect } from "react";
 
+function detectAdBlock() {
+  return new Promise((resolve) => {
+    const bait = document.createElement("div");
+    bait.className = "ad-banner ads adsbox ad-placement";
+    bait.style.cssText = "position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;";
+    document.body.appendChild(bait);
+    setTimeout(() => {
+      const blocked = bait.offsetHeight === 0 || bait.offsetParent === null ||
+        window.getComputedStyle(bait).display === "none" ||
+        window.getComputedStyle(bait).visibility === "hidden";
+      document.body.removeChild(bait);
+      resolve(blocked);
+    }, 100);
+  });
+}
+
 export default function AdBlockBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem("adblock_dismissed")) {
-      setVisible(true);
-    }
+    if (localStorage.getItem("adblock_dismissed")) return;
+    detectAdBlock().then((blocked) => {
+      if (!blocked) setVisible(true);
+    });
   }, []);
 
   const dismiss = () => {
