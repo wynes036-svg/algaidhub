@@ -2,7 +2,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { useApp } from "../context/AppContext";
 import FullscreenButton from "../components/FullscreenButton";
-import UnmuteOverlay from "../components/UnmuteOverlay";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -22,7 +21,6 @@ export default function WatchTV() {
     return 0;
   });
   const [lang, setLang] = useState("sub");
-  const [playerLoading, setPlayerLoading] = useState(false);
   const playerRef = useRef(null);
   const timerRef = useRef(null);
   const elapsedRef = useRef(0);
@@ -68,12 +66,6 @@ export default function WatchTV() {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
-  const handleServerChange = (i) => {
-    setPlayerLoading(true);
-    setActiveServer(i);
-    setTimeout(() => setPlayerLoading(false), 4000);
-  };
-
   const renderPlayer = () => {
     if (activeServer === 0)
       return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&primaryColor=e50914`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
@@ -113,19 +105,12 @@ export default function WatchTV() {
 
       <div ref={playerRef} style={styles.playerWrap}>
         {renderPlayer()}
-        {activeServer === 0 && <UnmuteOverlay />}
-        {playerLoading && (
-          <div style={styles.loadingOverlay}>
-            <div style={styles.spinner} />
-            <p style={{ color: "#aaa", marginTop: "16px", fontSize: "14px" }}>Loading player...</p>
-          </div>
-        )}
       </div>
 
       <div style={styles.serverBar}>
         <span style={styles.serverLabel}>Server:</span>
         {SERVERS.map((sv, i) => (
-          <button key={sv} onClick={() => handleServerChange(i)}
+          <button key={sv} onClick={() => setActiveServer(i)}
             style={{ ...styles.serverBtn, ...(activeServer === i ? styles.serverBtnActive : {}) }}>
             {sv}
           </button>
