@@ -66,25 +66,27 @@ export default function WatchTV() {
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
+  const ALLOW = "autoplay; fullscreen; encrypted-media; picture-in-picture";
+
   const renderPlayer = () => {
     if (activeServer === 0)
-      return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&primaryColor=e50914`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+      return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&muted=false&primaryColor=e50914`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
     if (activeServer === 1) {
       const dubParam = lang === "dub" ? "&dubbing=1" : "";
-      return <iframe key={`2e-${id}-${s}-${e}-${lang}`} src={`https://www.2embed.cc/embedtvfull/${id}&s=${s}&e=${e}${dubParam}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+      return <iframe key={`2e-${id}-${s}-${e}-${lang}`} src={`https://www.2embed.cc/embedtvfull/${id}&s=${s}&e=${e}${dubParam}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
     }
     if (activeServer === 2)
-      return <iframe key={`vm-${id}-${s}-${e}`} src={`https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+      return <iframe key={`vm-${id}-${s}-${e}`} src={`https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}&autoplay=1`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
     if (activeServer === 3) {
       if (!imdbId) return <div style={styles.noVideo}><p>Not found on Embed.su</p></div>;
-      return <iframe key={`es-${imdbId}-${s}-${e}`} src={`https://embed.su/embed/tv/${imdbId}/${s}/${e}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+      return <iframe key={`es-${imdbId}-${s}-${e}`} src={`https://embed.su/embed/tv/${imdbId}/${s}/${e}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
     }
     if (activeServer === 4) {
       const dubParam = lang === "dub" ? "&dubbed=1" : "";
-      return <iframe key={`aw-${id}-${s}-${e}-${lang}`} src={`https://vidsrc.to/embed/tv/${id}/${s}/${e}${dubParam}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+      return <iframe key={`aw-${id}-${s}-${e}-${lang}`} src={`https://vidsrc.to/embed/tv/${id}/${s}/${e}${dubParam}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
     }
     if (!trailer) return <div style={styles.noVideo}><p>No trailer available.</p></div>;
-    return <iframe src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1`} title={show?.name} style={styles.iframe} allow="autoplay; fullscreen" allowFullScreen />;
+    return <iframe src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1`} title={show?.name} style={styles.iframe} allow={ALLOW} allowFullScreen />;
   };
 
   return (

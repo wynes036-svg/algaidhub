@@ -79,13 +79,15 @@ export default function Watch() {
   );
   const videoUrl = matchedVideo ? `${VIDEO_SERVER}/videos/${matchedVideo}` : null;
 
+  const ALLOW = "autoplay; fullscreen; encrypted-media; picture-in-picture";
+
   const renderPlayer = () => {
     if (activeServer === 0)
-      return <iframe key={"vl"+id} src={`https://vidlink.pro/movie/${id}?autoplay=true&primaryColor=e50914`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+      return <iframe key={"vl"+id} src={`https://vidlink.pro/movie/${id}?autoplay=true&muted=false&primaryColor=e50914`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
     if (activeServer === 1)
-      return <iframe key={"vm"+id} src={`https://vidsrc.me/embed/movie?tmdb=${id}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+      return <iframe key={"vm"+id} src={`https://vidsrc.me/embed/movie?tmdb=${id}&autoplay=1`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
     if (activeServer === 2)
-      return <iframe key={"es"+id} src={`https://embed.su/embed/movie/${id}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+      return <iframe key={"es"+id} src={`https://embed.su/embed/movie/${id}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
     if (activeServer === 3) {
       if (!videoUrl) return <div style={styles.noVideo}><p>No video file found. Add {id}.mp4 to server/videos/</p></div>;
       return (
