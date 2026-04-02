@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 
+function isMobile() {
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
 function detectAdBlock() {
   return new Promise((resolve) => {
     const bait = document.createElement("div");
@@ -18,6 +22,7 @@ function detectAdBlock() {
 
 export default function AdBlockBanner() {
   const [visible, setVisible] = useState(false);
+  const mobile = isMobile();
 
   useEffect(() => {
     if (localStorage.getItem("adblock_dismissed")) return;
@@ -36,18 +41,28 @@ export default function AdBlockBanner() {
   return (
     <div style={styles.banner}>
       <span style={styles.icon}>🛡️</span>
-      <span style={styles.text}>
-        For the best movie experience, we recommend installing{" "}
-        <a
-          href="https://chromewebstore.google.com/detail/ad-block-wonder/fpkbnjejghdcncegfglnapabnljcimdc"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={styles.link}
-        >
-          Ad Block Wonder
-        </a>
-        {" "}— enjoy uninterrupted, ad-free streaming. Once installed, no more redirections.
-      </span>
+      {mobile ? (
+        <span style={styles.text}>
+          For the best mobile experience, use{" "}
+          <a href="https://brave.com/download" target="_blank" rel="noopener noreferrer" style={styles.link}>
+            Brave Browser
+          </a>
+          {" "}— it has a built-in ad blocker. No redirections, no interruptions.
+        </span>
+      ) : (
+        <span style={styles.text}>
+          For the best movie experience, install{" "}
+          <a
+            href="https://chromewebstore.google.com/detail/ad-block-wonder/fpkbnjejghdcncegfglnapabnljcimdc"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={styles.link}
+          >
+            Ad Block Wonder
+          </a>
+          {" "}— enjoy uninterrupted, ad-free streaming. Once installed, no more redirections.
+        </span>
+      )}
       <button onClick={dismiss} style={styles.close} title="Dismiss">✕</button>
     </div>
   );
