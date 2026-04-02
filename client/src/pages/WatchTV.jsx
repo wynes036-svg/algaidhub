@@ -6,7 +6,7 @@ import FullscreenButton from "../components/FullscreenButton";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
-const SERVERS = ["VidLink", "VidSrc.to", "VidSrc.me", "VidSrc.icu", "Multiembed", "Embed.su", "SmashyStream", "2embed", "Trailer"];
+const SERVERS = ["VidLink", "2embed (Anime)", "VidSrc.me", "Embed.su", "AniWatch (Sub/Dub)", "YouTube Trailer"];
 
 export default function WatchTV() {
   const { id, season, episode } = useParams();
@@ -69,23 +69,19 @@ export default function WatchTV() {
   const renderPlayer = () => {
     if (activeServer === 0)
       return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
-    if (activeServer === 1)
-      return <iframe key={`vt-${id}-${s}-${e}`} src={`https://vidsrc.to/embed/tv/${id}/${s}/${e}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    if (activeServer === 1) {
+      const dubParam = lang === "dub" ? "&dubbing=1" : "";
+      return <iframe key={`2e-${id}-${s}-${e}-${lang}`} src={`https://www.2embed.cc/embedtvfull/${id}&s=${s}&e=${e}${dubParam}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    }
     if (activeServer === 2)
       return <iframe key={`vm-${id}-${s}-${e}`} src={`https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
-    if (activeServer === 3)
-      return <iframe key={`vi-${id}-${s}-${e}`} src={`https://vidsrc.icu/embed/tv/${id}/${s}/${e}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
-    if (activeServer === 4)
-      return <iframe key={`me-${id}-${s}-${e}`} src={`https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
-    if (activeServer === 5) {
+    if (activeServer === 3) {
       if (!imdbId) return <div style={styles.noVideo}><p>Not found on Embed.su</p></div>;
       return <iframe key={`es-${imdbId}-${s}-${e}`} src={`https://embed.su/embed/tv/${imdbId}/${s}/${e}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
-    if (activeServer === 6)
-      return <iframe key={`ss-${id}-${s}-${e}`} src={`https://player.smashy.stream/tv/${id}?s=${s}&e=${e}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
-    if (activeServer === 7) {
-      const dubParam = lang === "dub" ? "&dubbing=1" : "";
-      return <iframe key={`2e-${id}-${s}-${e}-${lang}`} src={`https://www.2embed.cc/embedtvfull/${id}&s=${s}&e=${e}${dubParam}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    if (activeServer === 4) {
+      const dubParam = lang === "dub" ? "&dubbed=1" : "";
+      return <iframe key={`aw-${id}-${s}-${e}-${lang}`} src={`https://vidsrc.to/embed/tv/${id}/${s}/${e}${dubParam}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (!trailer) return <div style={styles.noVideo}><p>No trailer available.</p></div>;
     return <iframe src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1`} title={show?.name} style={styles.iframe} allow="autoplay; fullscreen" allowFullScreen />;
@@ -125,7 +121,7 @@ export default function WatchTV() {
               {sv}
             </button>
           ))}
-          {(isAnime || activeServer === 7) && (
+          {(isAnime || activeServer === 1 || activeServer === 4) && (
             <div style={styles.langToggle}>
               <button onClick={() => setLang("sub")} style={{ ...styles.langBtn, ...(lang === "sub" ? styles.langBtnActive : {}) }}>SUB</button>
               <button onClick={() => setLang("dub")} style={{ ...styles.langBtn, ...(lang === "dub" ? styles.langBtnActive : {}) }}>DUB</button>
