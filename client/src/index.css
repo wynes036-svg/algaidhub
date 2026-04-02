@@ -358,7 +358,7 @@ a:hover { color: #e50914; }
   }
   .hero-content { max-width: 100%; }
   .hero-title { font-size: 22px; margin-bottom: 8px; }
-  .hero-desc { font-size: 13px; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .hero-desc { font-size: 13px; margin-bottom: 14px; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
   .hero-buttons { gap: 8px; }
   .btn-primary, .btn-secondary { padding: 8px 16px; font-size: 13px; }
 
@@ -397,8 +397,8 @@ a:hover { color: #e50914; }
 }
 
 @keyframes loadBar {
-  0% { width: 0%; }
-  100% { width: 100%; }
+  from { width: 0%; }
+  to { width: 100%; }
 }
 
 @keyframes spin {
@@ -406,12 +406,8 @@ a:hover { color: #e50914; }
 }
 
 @keyframes pulse {
-  from { transform: scale(1); }
-  to { transform: scale(1.05); }
-}
-@keyframes load {
-  from { width: 0%; }
-  to { width: 100%; }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
 }
 
 /* Override browser default blue selection on dropdowns */
