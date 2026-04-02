@@ -46,6 +46,8 @@ export default function WatchTV() {
     const totalSeconds = (show.episode_run_time?.[0] || 45) * 60;
     clearInterval(timerRef.current);
     elapsedRef.current = 0;
+    // Save immediately so continue watching knows the current episode
+    saveEpProgress(Number(id), s, e, 1);
     updateProgress({ ...show, title: show.name, id: Number(id) }, 1);
     timerRef.current = setInterval(() => {
       elapsedRef.current += 10;
@@ -54,7 +56,7 @@ export default function WatchTV() {
       saveEpProgress(Number(id), s, e, percent);
     }, 10000);
     return () => clearInterval(timerRef.current);
-  }, [activeServer, show?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [show?.id, s, e]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => () => clearInterval(timerRef.current), []);
 
