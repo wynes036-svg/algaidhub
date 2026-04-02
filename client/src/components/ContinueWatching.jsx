@@ -3,6 +3,18 @@ import { useApp } from "../context/AppContext";
 
 const IMG_BASE = "https://image.tmdb.org/t/p/w300";
 
+function getWatchPath(item) {
+  const isTV = !!item.first_air_date || !!item.name && !item.title;
+  if (isTV) {
+    const ep = JSON.parse(localStorage.getItem("epProgress") || "{}");
+    const last = Object.values(ep)
+      .filter((e) => e.showId === item.id)
+      .sort((a, b) => b.updatedAt - a.updatedAt)[0];
+    return `/watch/tv/${item.id}/${last?.season || 1}/${last?.episode || 1}`;
+  }
+  return `/watch/${item.id}`;
+}
+
 export default function ContinueWatching() {
   const { continueWatching, removeFromContinue } = useApp();
   const navigate = useNavigate();
@@ -15,40 +27,32 @@ export default function ContinueWatching() {
         <h2 className="cat-heading">Continue Watching</h2>
       </div>
       <div className="film_list-wrap">
-        {continueWatching.map((movie) => (
-          <div key={movie.id} className="flw-item" onClick={() => navigate(`/watch/${movie.id}`)}>
-            <div className="film-poster" style={{ position: "relative" }}>
-              <img
-                src={
-                  movie.poster_path
-                    ? `${IMG_BASE}${movie.poster_path}`
-                    : "https://placehold.co/160x237/1a1a1a/555?text=No+Image"
-                }
-                alt={movie.title}
-              />
-              <div className="film-poster-overlay">
-                <button
-                  className="play-btn"
-                  onClick={(e) => { e.stopPropagation(); navigate(`/watch/${movie.id}`); }}
-                >▶</button>
+        {continueWatching.map((movie) => {
+          const path = getWatchPath(movie);
+          return (
+            <div key={movie.id} className="flw-item" onClick={() => navigate(path)}>
+              <div className="film-poster" style={{ position: "relative" }}>
+                <img
+                  src={movie.poster_path ? `${IMG_BASE}${movie.poster_path}` : "https://placehold.co/160x237/1a1a1a/555?text=No+Image"}
+                  alt={movie.title || movie.name}
+                />
+                <div className="film-poster-overlay">
+                  <button className="play-btn" onClick={(e) => { e.stopPropagation(); navigate(path); }}>▶</button>
+                </div>
+                <div style={styles.progressBg}>
+                  <div style={{ ...styles.progressFill, width: `${movie.percent || 0}%` }} />
+                </div>
+                <button style={styles.removeBtn}
+                  onClick={(e) => { e.stopPropagation(); removeFromContinue(movie.id); }}
+                  title="Remove">✕</button>
               </div>
-              {/* Progress bar */}
-              <div style={styles.progressBg}>
-                <div style={{ ...styles.progressFill, width: `${movie.percent || 0}%` }} />
+              <div className="film-detail">
+                <div className="film-name">{movie.title || movie.name}</div>
+                <div className="film-infor">{(movie.release_date || movie.first_air_date)?.slice(0, 4)}</div>
               </div>
-              {/* Remove button */}
-              <button
-                style={styles.removeBtn}
-                onClick={(e) => { e.stopPropagation(); removeFromContinue(movie.id); }}
-                title="Remove"
-              >✕</button>
             </div>
-            <div className="film-detail">
-              <div className="film-name">{movie.title}</div>
-              <div className="film-infor">{movie.release_date?.slice(0, 4)}</div>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
