@@ -36,6 +36,8 @@ export default function Home() {
       }
     };
     fetchAll();
+    const interval = setInterval(fetchAll, 30 * 60 * 1000); // refresh every 30 min
+    return () => clearInterval(interval);
   }, []);
 
   return (
