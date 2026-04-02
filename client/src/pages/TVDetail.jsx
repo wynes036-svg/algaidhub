@@ -104,7 +104,7 @@ export default function TVDetail() {
             <h3 style={styles.sectionTitle}>Episodes</h3>
             <select
               value={selectedSeason}
-              onChange={(e) => setSelectedSeason(Number(e.target.value))}
+              onChange={(ev) => setSelectedSeason(Number(ev.target.value))}
               style={styles.seasonSelect}
             >
               {seasons.map((s) => (
@@ -182,7 +182,7 @@ const styles = {
   episodesSection: { padding: "0 4% 40px" },
   episodesHeader: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "12px" },
   sectionTitle: { fontSize: "20px", fontWeight: "400", borderLeft: "4px solid #e50914", paddingLeft: "12px" },
-  seasonSelect: { background: "#1a1a1a", color: "#e50914", border: "1px solid #e50914", borderRadius: "6px", padding: "8px 16px", fontSize: "14px", cursor: "pointer", fontWeight: "600" },
+  seasonSelect: { background: "#1a1a1a", color: "#e50914", border: "1px solid #e50914", borderRadius: "6px", padding: "10px 16px", fontSize: "14px", cursor: "pointer", fontWeight: "600", minWidth: "180px" },
   episodeList: { display: "flex", flexDirection: "column", gap: "2px" },
   episodeCard: { display: "flex", gap: "16px", padding: "12px", borderRadius: "6px", cursor: "pointer", background: "#111", marginBottom: "4px", transition: "background 0.2s" },
   episodeCardActive: { background: "#1a1a1a", borderLeft: "3px solid #e50914" },
