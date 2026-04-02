@@ -17,11 +17,12 @@ export default function WatchTV() {
   const [trailer, setTrailer] = useState(null);
   const [activeServer, setActiveServer] = useState(() => {
     const ua = navigator.userAgent;
-    if (/Android TV|TV Safari|SmartTV|SMART-TV|Tizen|webOS|HbbTV/i.test(ua)) return 0; // TV → VidLink
-    if (/Android|iPhone|iPad|iPod/i.test(ua)) return 2; // Mobile → VidSrc.me
-    return 0; // Desktop → VidLink
+    if (/Android TV|TV Safari|SmartTV|SMART-TV|Tizen|webOS|HbbTV/i.test(ua)) return 0;
+    if (/Android|iPhone|iPad|iPod/i.test(ua)) return 2;
+    return 0;
   });
   const [lang, setLang] = useState("sub");
+  const [playerLoading, setPlayerLoading] = useState(false);
   const playerRef = useRef(null);
   const timerRef = useRef(null);
   const elapsedRef = useRef(0);
@@ -29,6 +30,7 @@ export default function WatchTV() {
   const e = Number(episode) || 1;
 
   const isAnime = show?.genres?.some((g) => g.id === 16) || show?.origin_country?.includes("JP");
+  const favorited = show && isFavorite(Number(id));
 
   useEffect(() => {
     fetch(`${BASE_URL}/tv/${id}?api_key=${API_KEY}&append_to_response=videos,external_ids`)
@@ -58,17 +60,19 @@ export default function WatchTV() {
   useEffect(() => () => clearInterval(timerRef.current), []);
 
   useEffect(() => {
-    const handleKey = (e) => {
-      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
-      if (e.code === "Space" || e.code === "ArrowRight" || e.code === "ArrowLeft") {
-        e.preventDefault();
-      }
+    const handleKey = (ev) => {
+      if (ev.target.tagName === "INPUT" || ev.target.tagName === "TEXTAREA") return;
+      if (ev.code === "Space" || ev.code === "ArrowRight" || ev.code === "ArrowLeft") ev.preventDefault();
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, []);
 
-  const favorited = show && isFavorite(Number(id));
+  const handleServerChange = (i) => {
+    setPlayerLoading(true);
+    setActiveServer(i);
+    setTimeout(() => setPlayerLoading(false), 4000);
+  };
 
   const renderPlayer = () => {
     if (activeServer === 0)
@@ -110,12 +114,18 @@ export default function WatchTV() {
       <div ref={playerRef} style={styles.playerWrap}>
         {renderPlayer()}
         {activeServer === 0 && <UnmuteOverlay />}
+        {playerLoading && (
+          <div style={styles.loadingOverlay}>
+            <div style={styles.spinner} />
+            <p style={{ color: "#aaa", marginTop: "16px", fontSize: "14px" }}>Loading player...</p>
+          </div>
+        )}
       </div>
 
       <div style={styles.serverBar}>
         <span style={styles.serverLabel}>Server:</span>
         {SERVERS.map((sv, i) => (
-          <button key={sv} onClick={() => setActiveServer(i)}
+          <button key={sv} onClick={() => handleServerChange(i)}
             style={{ ...styles.serverBtn, ...(activeServer === i ? styles.serverBtnActive : {}) }}>
             {sv}
           </button>
@@ -142,18 +152,20 @@ const styles = {
   serverLabel: { color: "#e50914", fontSize: "12px", marginRight: "4px", fontWeight: "600", flexShrink: 0 },
   serverBtn: { background: "#2a2a2a", color: "#e50914", border: "1px solid #2a2a2a", padding: "7px 14px", borderRadius: "5px", cursor: "pointer", fontSize: "12px", flexShrink: 0, whiteSpace: "nowrap" },
   serverBtnActive: { background: "#e50914", color: "#fff", border: "1px solid #e50914" },
-  epNav: { background: "#0a0a0a", padding: "10px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" },
   navBtn: { background: "#1a1a1a", color: "#ccc", border: "1px solid #333", padding: "8px 14px", borderRadius: "4px", cursor: "pointer", fontSize: "12px" },
   langToggle: { marginLeft: "auto", display: "flex", background: "#2a2a2a", borderRadius: "6px", overflow: "hidden", border: "1px solid #e50914", flexShrink: 0 },
   langBtn: { background: "transparent", color: "#e50914", border: "none", padding: "6px 14px", cursor: "pointer", fontSize: "12px", fontWeight: "600" },
   langBtnActive: { background: "#e50914", color: "#fff" },
-  playerWrap: {
-    flex: 1,
-    position: "relative",
-    background: "#000",
-    overflow: "hidden",
-    minHeight: 0,
-  },
+  playerWrap: { flex: 1, position: "relative", background: "#000", overflow: "hidden", minHeight: 0 },
   iframe: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" },
   noVideo: { textAlign: "center", color: "#aaa", padding: "60px 20px", fontSize: "16px" },
+  loadingOverlay: {
+    position: "absolute", inset: 0, background: "rgba(0,0,0,0.85)",
+    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", zIndex: 10,
+  },
+  spinner: {
+    width: "44px", height: "44px", border: "4px solid #333",
+    borderTop: "4px solid #e50914", borderRadius: "50%",
+    animation: "spin 0.8s linear infinite",
+  },
 };

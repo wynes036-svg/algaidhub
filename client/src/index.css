@@ -401,6 +401,10 @@ a:hover { color: #e50914; }
   100% { width: 100%; }
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 @keyframes pulse {
   from { transform: scale(1); }
   to { transform: scale(1.05); }
