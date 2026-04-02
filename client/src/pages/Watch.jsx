@@ -1,4 +1,4 @@
-﻿import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { useApp } from "../context/AppContext";
 import SkipButton from "../components/SkipButton";
@@ -23,21 +23,19 @@ export default function Watch() {
   const elapsedRef = useRef(0);
   const videoRef = useRef(null);
   const playerRef = useRef(null);
-  const movieRef = useRef(null);
 
   useEffect(() => {
     fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=videos,external_ids`)
-      .then(r => r.json())
-      .then(data => {
+      .then((r) => r.json())
+      .then((data) => {
         setMovie(data);
-        movieRef.current = data;
         setImdbId(data.external_ids?.imdb_id || null);
-        const yt = data.videos?.results?.find(v => v.type === "Trailer" && v.site === "YouTube");
+        const yt = data.videos?.results?.find((v) => v.type === "Trailer" && v.site === "YouTube");
         setTrailer(yt);
       });
     fetch(`${VIDEO_SERVER}/videos`)
-      .then(r => r.json())
-      .then(d => setServerVideos(d.videos || []))
+      .then((r) => r.json())
+      .then((d) => setServerVideos(d.videos || []))
       .catch(() => setServerVideos([]));
   }, [id]);
 
@@ -51,37 +49,40 @@ export default function Watch() {
     timerRef.current = setInterval(() => {
       elapsedRef.current += 10;
       const percent = Math.min(Math.round((elapsedRef.current / totalSeconds) * 100), 94);
-      updateProgress(movieRef.current, percent);
+      updateProgress(movie, percent);
     }, 10000);
     return () => clearInterval(timerRef.current);
-  }, [activeServer, movie?.id]); // eslint-disable-line
+  }, [activeServer, movie]);
 
   useEffect(() => () => clearInterval(timerRef.current), []);
 
   const favorited = movie && isFavorite(movie.id);
-  const matchedVideo = serverVideos.find(f => f.startsWith(id) || f.toLowerCase().includes((movie?.title || "").toLowerCase().slice(0, 10)));
+  const matchedVideo = serverVideos.find(
+    (f) => f.startsWith(id) || f.toLowerCase().includes((movie?.title || "").toLowerCase().slice(0, 10))
+  );
   const videoUrl = matchedVideo ? `${VIDEO_SERVER}/videos/${matchedVideo}` : null;
 
   const renderPlayer = () => {
-    if (activeServer === 0)
-      return <iframe key={`vl-${id}`} src={`https://vidlink.pro/movie/${id}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    if (activeServer === 0) {
+      return <iframe key={"vl" + id} src={`https://vidlink.pro/movie/${id}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+    }
     if (activeServer === 1) {
       if (!imdbId) return <div style={styles.noVideo}><p>Not found on VidSrc.me</p></div>;
-      return <iframe key={`vm-${imdbId}`} src={`https://vidsrc.me/embed/movie?imdb=${imdbId}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+      return <iframe key={"vm" + imdbId} src={`https://vidsrc.me/embed/movie?imdb=${imdbId}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 2) {
       if (!imdbId) return <div style={styles.noVideo}><p>Not found on Embed.su</p></div>;
-      return <iframe key={`es-${imdbId}`} src={`https://embed.su/embed/movie/${imdbId}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+      return <iframe key={"es" + imdbId} src={`https://embed.su/embed/movie/${imdbId}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 3) {
-      if (!videoUrl) return <div style={styles.noVideo}><p>No video file found.</p></div>;
+      if (!videoUrl) return <div style={styles.noVideo}><p>No video file found. Add {id}.mp4 to server/videos/</p></div>;
       return (
         <video ref={videoRef} key={videoUrl} controls autoPlay
-          onTimeUpdate={e => {
+          onTimeUpdate={(e) => {
             const { currentTime, duration } = e.target;
-            if (duration && movieRef.current) {
+            if (duration && movie) {
               const pct = Math.round((currentTime / duration) * 100);
-              if (pct % 5 === 0) updateProgress(movieRef.current, pct);
+              if (pct % 5 === 0) updateProgress(movie, pct);
             }
           }}
           style={{ width: "100%", height: "100%", background: "#000" }}>
@@ -95,28 +96,36 @@ export default function Watch() {
 
   return (
     <>
-      {lightOff && <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.95)", zIndex: 98 }} onClick={() => setLightOff(false)} />}
+      {lightOff && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.95)", zIndex: 98 }}
+          onClick={() => setLightOff(false)} />
+      )}
       <div className="watch-page" style={{ position: "relative", zIndex: lightOff ? 99 : 1 }}>
         <div className="watch-header">
-          <button className="watch-back-btn" onClick={() => navigate(-1)}>Back</button>
+          <button className="watch-back-btn" onClick={() => navigate(-1)}>← Back</button>
           <span className="watch-title">{movie?.title}</span>
           <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center" }}>
             <FullscreenButton targetRef={playerRef} />
-            <button onClick={() => setLightOff(!lightOff)} style={styles.controlBtn}>{lightOff ? "Light On" : "Light Off"}</button>
+            <button onClick={() => setLightOff(!lightOff)} style={styles.controlBtn}>
+              {lightOff ? "💡 Light On" : "🌙 Light Off"}
+            </button>
             {movie && (
-              <button onClick={() => favorited ? removeFavorite(movie.id) : addFavorite(movie)}
+              <button
+                onClick={() => favorited ? removeFavorite(movie.id) : addFavorite(movie)}
                 style={{ ...styles.controlBtn, color: favorited ? "#e50914" : "#fff" }}>
-                {favorited ? "Saved" : "My List"}
+                {favorited ? "♥ Saved" : "♡ My List"}
               </button>
             )}
           </div>
         </div>
+
         <div className="watch-player">
           <div ref={playerRef} style={{ ...styles.playerWrap, position: "relative" }}>
             {renderPlayer()}
             <SkipButton runtime={movie?.runtime || 120} />
           </div>
         </div>
+
         <div style={styles.serverBar}>
           <span style={styles.serverLabel}>Server:</span>
           {SERVERS.map((s, i) => (
