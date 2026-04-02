@@ -2,12 +2,11 @@ import { useNavigate } from "react-router-dom";
 
 const IMG_BASE = "https://image.tmdb.org/t/p/w300";
 
-// Movies released within 60 days are likely cam copies, 60-120 days may still be cam/HD-rip
+// All embed servers serve HD quality when available
 function getQuality(releaseDate) {
   if (!releaseDate) return { label: "HD", color: "#3e8afa" };
   const days = (Date.now() - new Date(releaseDate).getTime()) / (1000 * 60 * 60 * 24);
-  if (days < 60) return { label: "CAM", color: "#ff6b00" };
-  if (days < 120) return { label: "HD-RIP", color: "#f5c518" };
+  if (days < 30) return { label: "CAM", color: "#ff6b00" };
   return { label: "HD", color: "#3e8afa" };
 }
 
