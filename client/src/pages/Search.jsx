@@ -41,7 +41,11 @@ export default function Search() {
         ) : (
           <div style={styles.grid}>
             {results.map((item) => (
-              <MovieCard key={item.id} movie={{ ...item, title: item.title || item.name }} />
+              <MovieCard
+                key={item.id}
+                movie={{ ...item, title: item.title || item.name }}
+                mediaType={item.media_type}
+              />
             ))}
           </div>
         )}
