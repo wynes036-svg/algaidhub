@@ -78,14 +78,8 @@ export default function WatchTV() {
       return <iframe key={`es-${imdbId}-${s}-${e}`} src={`https://embed.su/embed/tv/${imdbId}/${s}/${e}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (activeServer === 4) {
-      if (!isAnime) return (
-        <div style={styles.noVideo}>
-          <p>🎌 AniWatch is for anime only.</p>
-          <p style={{ fontSize: "13px", marginTop: "8px", color: "#888" }}>Select a different server for this show.</p>
-        </div>
-      );
-      const dubParam = lang === "dub" ? "?dub=1" : "";
-      return <iframe key={`aw-${id}-${s}-${e}-${lang}`} src={`https://aniwatchtv.to/watch/${id}?ep=${e}${dubParam}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
+      const dubParam = lang === "dub" ? "&dubbed=1" : "";
+      return <iframe key={`aw-${id}-${s}-${e}-${lang}`} src={`https://vidsrc.to/embed/tv/${id}/${s}/${e}${dubParam}`} style={styles.iframe} allowFullScreen allow="autoplay; fullscreen" />;
     }
     if (!trailer) return <div style={styles.noVideo}><p>No trailer available.</p></div>;
     return <iframe src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1`} title={show?.name} style={styles.iframe} allow="autoplay; fullscreen" allowFullScreen />;
@@ -115,11 +109,7 @@ export default function WatchTV() {
         <span style={styles.serverLabel}>Server:</span>
         {SERVERS.map((sv, i) => (
           <button key={sv} onClick={() => setActiveServer(i)}
-            style={{
-              ...styles.serverBtn,
-              ...(activeServer === i ? styles.serverBtnActive : {}),
-              ...(i === 4 && !isAnime ? { opacity: 0.4 } : {}),
-            }}>
+            style={{ ...styles.serverBtn, ...(activeServer === i ? styles.serverBtnActive : {}) }}>
             {sv}
           </button>
         ))}
