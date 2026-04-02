@@ -44,10 +44,10 @@ export default function AdBlockBanner() {
       {mobile ? (
         <span style={styles.text}>
           For the best mobile experience, use{" "}
-          <a href="https://www.mozilla.org/firefox/browsers/mobile/focus/" target="_blank" rel="noopener noreferrer" style={styles.link}>
-            Firefox Focus
+          <a href="https://brave.com/download" target="_blank" rel="noopener noreferrer" style={styles.link}>
+            Brave Browser
           </a>
-          {" "}— built-in ad & tracker blocking, no setup needed. No redirections, no interruptions.
+          {" "}— it has a built-in ad blocker. No redirections, no interruptions.
         </span>
       ) : (
         <span style={styles.text}>
