@@ -102,17 +102,20 @@ export default function TVDetail() {
         <div style={styles.episodesSection}>
           <div style={styles.episodesHeader}>
             <h3 style={styles.sectionTitle}>Episodes</h3>
-            <select
-              value={selectedSeason}
-              onChange={(ev) => setSelectedSeason(Number(ev.target.value))}
-              style={styles.seasonSelect}
-            >
+            <div style={styles.seasonBtns}>
               {seasons.map((s) => (
-                <option key={s.season_number} value={s.season_number}>
-                  Season {s.season_number} ({s.episode_count} episodes)
-                </option>
+                <button
+                  key={s.season_number}
+                  onClick={() => setSelectedSeason(s.season_number)}
+                  style={{
+                    ...styles.seasonBtn,
+                    ...(selectedSeason === s.season_number ? styles.seasonBtnActive : {}),
+                  }}
+                >
+                  S{s.season_number}
+                </button>
               ))}
-            </select>
+            </div>
           </div>
 
           {loadingEps ? (
@@ -182,7 +185,9 @@ const styles = {
   episodesSection: { padding: "0 4% 40px" },
   episodesHeader: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "20px", flexWrap: "wrap", gap: "12px" },
   sectionTitle: { fontSize: "20px", fontWeight: "400", borderLeft: "4px solid #e50914", paddingLeft: "12px" },
-  seasonSelect: { background: "#1a1a1a", color: "#e50914", border: "1px solid #e50914", borderRadius: "6px", padding: "10px 16px", fontSize: "14px", cursor: "pointer", fontWeight: "600", minWidth: "180px" },
+  seasonBtns: { display: "flex", gap: "8px", flexWrap: "wrap" },
+  seasonBtn: { background: "#1a1a1a", color: "#e50914", border: "1px solid #333", borderRadius: "6px", padding: "8px 16px", fontSize: "14px", cursor: "pointer", fontWeight: "600", transition: "all 0.2s" },
+  seasonBtnActive: { background: "#e50914", color: "#fff", border: "1px solid #e50914" },
   episodeList: { display: "flex", flexDirection: "column", gap: "2px" },
   episodeCard: { display: "flex", gap: "16px", padding: "12px", borderRadius: "6px", cursor: "pointer", background: "#111", marginBottom: "4px", transition: "background 0.2s" },
   episodeCardActive: { background: "#1a1a1a", borderLeft: "3px solid #e50914" },
