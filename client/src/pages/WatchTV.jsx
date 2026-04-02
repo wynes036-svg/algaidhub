@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { useApp } from "../context/AppContext";
-import SkipButton from "../components/SkipButton";
 import FullscreenButton from "../components/FullscreenButton";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
@@ -16,7 +15,6 @@ export default function WatchTV() {
   const [imdbId, setImdbId] = useState(null);
   const [trailer, setTrailer] = useState(null);
   const [activeServer, setActiveServer] = useState(0);
-  const [lightOff, setLightOff] = useState(false);
   const [lang, setLang] = useState("sub");
   const playerRef = useRef(null);
   const timerRef = useRef(null);
@@ -88,15 +86,12 @@ export default function WatchTV() {
   };
 
   return (
-    <>
-      {lightOff && <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.95)", zIndex: 98 }} onClick={() => setLightOff(false)} />}
-      <div className="watch-page" style={{ position: "relative", zIndex: lightOff ? 99 : 1 }}>
+    <div className="watch-page">
         <div className="watch-header">
           <button className="watch-back-btn" onClick={() => navigate(`/tv/${id}`)}>← Back</button>
           <span className="watch-title">{show?.name} — S{s}:E{e}</span>
           <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center" }}>
             <FullscreenButton targetRef={playerRef} />
-            <button onClick={() => setLightOff(!lightOff)} style={styles.controlBtn}>{lightOff ? "💡 Light On" : "🌙 Light Off"}</button>
             {show && (
               <button onClick={() => favorited ? removeFavorite(Number(id)) : addFavorite({ ...show, title: show.name, id: Number(id) })}
                 style={{ ...styles.controlBtn, color: favorited ? "#e50914" : "#fff" }}>
@@ -109,7 +104,6 @@ export default function WatchTV() {
         <div className="watch-player">
           <div ref={playerRef} style={{ ...styles.playerWrap, position: "relative" }}>
             {renderPlayer()}
-            <SkipButton runtime={show?.episode_run_time?.[0] || 45} />
           </div>
         </div>
 
@@ -134,8 +128,7 @@ export default function WatchTV() {
           <span style={{ color: "#e50914", fontSize: "13px", fontWeight: "600" }}>Season {s} · Episode {e}</span>
           <button style={styles.navBtn} onClick={() => navigate(`/watch/tv/${id}/${s}/${e + 1}`)}>Next →</button>
         </div>
-      </div>
-    </>
+    </div>
   );
 }
 

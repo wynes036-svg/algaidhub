@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { useApp } from "../context/AppContext";
-import SkipButton from "../components/SkipButton";
 import FullscreenButton from "../components/FullscreenButton";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
@@ -17,7 +16,6 @@ export default function Watch() {
   const [movie, setMovie] = useState(null);
   const [imdbId, setImdbId] = useState(null);
   const [activeServer, setActiveServer] = useState(0);
-  const [lightOff, setLightOff] = useState(false);
   const [serverVideos, setServerVideos] = useState([]);
   const timerRef = useRef(null);
   const elapsedRef = useRef(0);
@@ -113,20 +111,12 @@ export default function Watch() {
   };
 
   return (
-    <>
-      {lightOff && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.95)", zIndex: 98 }}
-          onClick={() => setLightOff(false)} />
-      )}
-      <div className="watch-page" style={{ position: "relative", zIndex: lightOff ? 99 : 1 }}>
+    <div className="watch-page">
         <div className="watch-header">
           <button className="watch-back-btn" onClick={() => navigate(-1)}>← Back</button>
           <span className="watch-title">{movie?.title}</span>
           <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center" }}>
             <FullscreenButton targetRef={playerRef} />
-            <button onClick={() => setLightOff(!lightOff)} style={styles.controlBtn}>
-              {lightOff ? "💡 Light On" : "🌙 Light Off"}
-            </button>
             {movie && (
               <button
                 onClick={() => favorited ? removeFavorite(movie.id) : addFavorite(movie)}
@@ -140,7 +130,6 @@ export default function Watch() {
         <div className="watch-player">
           <div ref={playerRef} style={{ ...styles.playerWrap, position: "relative" }}>
             {renderPlayer()}
-            <SkipButton runtime={movie?.runtime || 120} />
           </div>
         </div>
 
@@ -153,8 +142,7 @@ export default function Watch() {
             </button>
           ))}
         </div>
-      </div>
-    </>
+    </div>
   );
 }
 

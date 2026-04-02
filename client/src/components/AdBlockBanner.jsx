@@ -44,9 +44,9 @@ export default function AdBlockBanner() {
           rel="noopener noreferrer"
           style={styles.link}
         >
-          AdBlock Wonder
-        </a>{" "}
-        — enjoy uninterrupted, ad-free streaming.
+          Ad Block Wonder
+        </a>
+        {" "}— enjoy uninterrupted, ad-free streaming. Once installed, no more redirections.
       </span>
       <button onClick={dismiss} style={styles.close} title="Dismiss">✕</button>
     </div>
