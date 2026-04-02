@@ -31,6 +31,7 @@ export default function AdBlockBanner() {
 
   useEffect(() => {
     if (localStorage.getItem("adblock_dismissed")) return;
+    if (isTV()) return; // no banner on TVs
     detectAdBlock().then((blocked) => {
       if (!blocked) setVisible(true);
     });
