@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
 import { useApp } from "../context/AppContext";
 import FullscreenButton from "../components/FullscreenButton";
+import UnmuteOverlay from "../components/UnmuteOverlay";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -129,6 +130,7 @@ export default function Watch() {
 
       <div ref={playerRef} style={styles.playerWrap}>
         {renderPlayer()}
+        {activeServer === 0 && <UnmuteOverlay />}
       </div>
 
       <div style={styles.serverBar}>
