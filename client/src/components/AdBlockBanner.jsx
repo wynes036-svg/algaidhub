@@ -22,7 +22,7 @@ export default function AdBlockBanner() {
       <span style={styles.text}>
         For the best movie experience, we recommend installing{" "}
         <a
-          href="https://chrome.google.com/webstore/detail/adblock-wonder/bgnkhhnnamicmpeenaelnjfhikgbkllg"
+          href="https://chromewebstore.google.com/detail/ad-block-wonder/fpkbnjejghdcncegfglnapabnljcimdc"
           target="_blank"
           rel="noopener noreferrer"
           style={styles.link}
