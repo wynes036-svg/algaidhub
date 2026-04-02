@@ -12,6 +12,7 @@ import TVDetail from "./pages/TVDetail";
 import WatchTV from "./pages/WatchTV";
 import NewPopular from "./pages/NewPopular";
 import LoginModal from "./components/LoginModal";
+import AdBlockBanner from "./components/AdBlockBanner";
 import "./index.css";
 
 function AppRoutes() {
@@ -19,6 +20,7 @@ function AppRoutes() {
   return (
     <>
       {showLoginModal && <LoginModal />}
+      <AdBlockBanner />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movies" element={<Movies />} />
