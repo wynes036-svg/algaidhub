@@ -148,11 +148,11 @@ export default function Watch() {
 
 const styles = {
   controlBtn: { background: "rgba(255,255,255,0.1)", color: "#fff", border: "none", padding: "8px 14px", borderRadius: "4px", cursor: "pointer", fontSize: "13px" },
-  serverBar: { background: "#111", padding: "12px 24px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", borderTop: "1px solid #1a1a1a" },
-  serverLabel: { color: "#e50914", fontSize: "13px", marginRight: "4px", fontWeight: "600" },
-  serverBtn: { background: "#2a2a2a", color: "#e50914", border: "1px solid #2a2a2a", padding: "8px 18px", borderRadius: "5px", cursor: "pointer", fontSize: "13px" },
+  serverBar: { background: "#111", padding: "10px 12px", display: "flex", alignItems: "center", gap: "6px", overflowX: "auto", flexWrap: "nowrap", borderTop: "1px solid #1a1a1a", WebkitOverflowScrolling: "touch" },
+  serverLabel: { color: "#e50914", fontSize: "12px", marginRight: "4px", fontWeight: "600", flexShrink: 0 },
+  serverBtn: { background: "#2a2a2a", color: "#e50914", border: "1px solid #2a2a2a", padding: "7px 14px", borderRadius: "5px", cursor: "pointer", fontSize: "12px", flexShrink: 0, whiteSpace: "nowrap" },
   serverBtnActive: { background: "#e50914", color: "#fff", border: "1px solid #e50914" },
-  playerWrap: { position: "relative", width: "100%", maxWidth: "1200px", aspectRatio: "16/9", background: "#000", borderRadius: "8px", overflow: "hidden", margin: "0 auto" },
+  playerWrap: { position: "relative", width: "100%", maxWidth: "1200px", aspectRatio: "16/9", background: "#000", borderRadius: "0", overflow: "hidden", margin: "0 auto" },
   iframe: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" },
   noVideo: { textAlign: "center", color: "#aaa", padding: "60px 20px", fontSize: "16px" },
 };
