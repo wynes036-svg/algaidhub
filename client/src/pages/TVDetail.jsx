@@ -12,13 +12,14 @@ const IMG_W300 = "https://image.tmdb.org/t/p/w300";
 export default function TVDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addFavorite, removeFavorite, isFavorite } = useApp();
+  const { addFavorite, removeFavorite, isFavorite, getShowEpProgress } = useApp();
   const [show, setShow] = useState(null);
   const [trailer, setTrailer] = useState(null);
   const [cast, setCast] = useState([]);
   const [selectedSeason, setSelectedSeason] = useState(1);
   const [episodes, setEpisodes] = useState([]);
   const [loadingEps, setLoadingEps] = useState(false);
+  const [epProgress, setEpProgress] = useState({});
 
   useEffect(() => {
     fetch(`${BASE_URL}/tv/${id}?api_key=${API_KEY}&append_to_response=videos,credits`)
@@ -33,6 +34,14 @@ export default function TVDetail() {
           setSelectedSeason(first);
         }
       });
+  }, [id]);
+
+  // Load episode progress
+  useEffect(() => {
+    const progress = getShowEpProgress(id);
+    const map = {};
+    progress.forEach((p) => { map[`s${p.season}e${p.episode}`] = p.percent; });
+    setEpProgress(map);
   }, [id]);
 
   useEffect(() => {
@@ -52,6 +61,12 @@ export default function TVDetail() {
   const favorited = isFavorite(show.id);
   const seasons = show.seasons?.filter((s) => s.season_number > 0) || [];
 
+  // Find the last watched episode to resume
+  const allEpProgress = getShowEpProgress(id);
+  const lastWatched = allEpProgress.sort((a, b) => b.updatedAt - a.updatedAt)[0];
+  const resumeSeason = lastWatched?.season || 1;
+  const resumeEpisode = lastWatched?.episode || 1;
+
   return (
     <>
       <Navbar />
@@ -67,7 +82,9 @@ export default function TVDetail() {
             <span className="quality-badge">HD</span>
           </div>
           <div style={{ display: "flex", gap: "12px", marginBottom: "24px", flexWrap: "wrap" }}>
-            <button className="btn-primary" onClick={() => navigate(`/watch/tv/${show.id}/1/1`)}>▶ Play S1:E1</button>
+            <button className="btn-primary" onClick={() => navigate(`/watch/tv/${show.id}/${resumeSeason}/${resumeEpisode}`)}>
+              ▶ {lastWatched ? `Resume S${resumeSeason}:E${resumeEpisode}` : "Play S1:E1"}
+            </button>
             <button className="btn-secondary" onClick={() => favorited ? removeFavorite(show.id) : addFavorite({ ...show, title: show.name })}
               style={{ color: favorited ? "#e50914" : "#fff" }}>
               {favorited ? "♥ In My List" : "+ My List"}
@@ -102,25 +119,37 @@ export default function TVDetail() {
             <div className="loading"><div className="d1" /><div className="d2" /><div /></div>
           ) : (
             <div style={styles.episodeList}>
-              {episodes.map((ep) => (
-                <div key={ep.id} style={styles.episodeCard}
-                  onClick={() => navigate(`/watch/tv/${show.id}/${selectedSeason}/${ep.episode_number}`)}>
-                  <div style={styles.epThumb}>
-                    {ep.still_path
-                      ? <img src={`${IMG_W300}${ep.still_path}`} alt={ep.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      : <div style={styles.epThumbPlaceholder}>▶</div>}
-                    <div style={styles.epPlayOverlay}>▶</div>
-                  </div>
-                  <div style={styles.epInfo}>
-                    <div style={styles.epTitle}>
-                      <span style={{ color: "#888", marginRight: "8px" }}>{ep.episode_number}.</span>
-                      {ep.name}
+              {episodes.map((ep) => {
+                const epKey = `s${selectedSeason}e${ep.episode_number}`;
+                const pct = epProgress[epKey] || 0;
+                const isCurrent = lastWatched?.season === selectedSeason && lastWatched?.episode === ep.episode_number;
+                return (
+                  <div key={ep.id}
+                    style={{ ...styles.episodeCard, ...(isCurrent ? styles.episodeCardActive : {}) }}
+                    onClick={() => navigate(`/watch/tv/${show.id}/${selectedSeason}/${ep.episode_number}`)}>
+                    <div style={styles.epThumb}>
+                      {ep.still_path
+                        ? <img src={`${IMG_W300}${ep.still_path}`} alt={ep.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        : <div style={styles.epThumbPlaceholder}>▶</div>}
+                      <div style={styles.epPlayOverlay}>▶</div>
+                      {pct > 0 && (
+                        <div style={styles.epProgressBg}>
+                          <div style={{ ...styles.epProgressFill, width: `${pct}%` }} />
+                        </div>
+                      )}
                     </div>
-                    <div style={styles.epMeta}>{ep.runtime ? `${ep.runtime} min` : ""} {ep.air_date?.slice(0, 4)}</div>
-                    <p style={styles.epOverview}>{ep.overview?.slice(0, 150)}{ep.overview?.length > 150 ? "..." : ""}</p>
+                    <div style={styles.epInfo}>
+                      <div style={styles.epTitle}>
+                        <span style={{ color: "#888", marginRight: "8px" }}>{ep.episode_number}.</span>
+                        {ep.name}
+                        {isCurrent && <span style={styles.watchingBadge}>● Watching</span>}
+                      </div>
+                      <div style={styles.epMeta}>{ep.runtime ? `${ep.runtime} min` : ""} {ep.air_date?.slice(0, 4)}</div>
+                      <p style={styles.epOverview}>{ep.overview?.slice(0, 150)}{ep.overview?.length > 150 ? "..." : ""}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
@@ -156,11 +185,15 @@ const styles = {
   seasonSelect: { background: "#1a1a1a", color: "#e50914", border: "1px solid #e50914", borderRadius: "6px", padding: "8px 16px", fontSize: "14px", cursor: "pointer", fontWeight: "600" },
   episodeList: { display: "flex", flexDirection: "column", gap: "2px" },
   episodeCard: { display: "flex", gap: "16px", padding: "12px", borderRadius: "6px", cursor: "pointer", background: "#111", marginBottom: "4px", transition: "background 0.2s" },
+  episodeCardActive: { background: "#1a1a1a", borderLeft: "3px solid #e50914" },
   epThumb: { width: "160px", height: "90px", flexShrink: 0, borderRadius: "4px", overflow: "hidden", background: "#2a2a2a", position: "relative" },
   epThumbPlaceholder: { width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", color: "#555" },
   epPlayOverlay: { position: "absolute", inset: 0, background: "rgba(0,0,0,0)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", color: "#fff", opacity: 0, transition: "all 0.2s" },
+  epProgressBg: { position: "absolute", bottom: 0, left: 0, right: 0, height: "3px", background: "rgba(255,255,255,0.2)" },
+  epProgressFill: { height: "100%", background: "#e50914" },
   epInfo: { flex: 1 },
-  epTitle: { fontSize: "15px", fontWeight: "500", color: "#e50914", marginBottom: "4px" },
+  epTitle: { fontSize: "15px", fontWeight: "500", color: "#e50914", marginBottom: "4px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" },
+  watchingBadge: { fontSize: "11px", color: "#e50914", background: "rgba(229,9,20,0.15)", padding: "2px 8px", borderRadius: "10px", border: "1px solid #e50914" },
   epMeta: { fontSize: "12px", color: "#e50914", marginBottom: "6px" },
   epOverview: { fontSize: "13px", color: "#aaa", lineHeight: "1.5" },
   xray: { padding: "0 4% 40px" },

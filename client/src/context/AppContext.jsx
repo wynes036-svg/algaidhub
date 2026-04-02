@@ -14,6 +14,18 @@ const removeProgress = (movieId) => {
   localStorage.setItem("watchProgress", JSON.stringify(all));
 };
 
+// Episode-level progress: key = "tv_{showId}_s{season}e{episode}"
+const getEpProgress = () => JSON.parse(localStorage.getItem("epProgress") || "{}");
+const saveEpProgress = (showId, season, episode, percent) => {
+  const all = getEpProgress();
+  all[`tv_${showId}_s${season}e${episode}`] = { showId, season, episode, percent, updatedAt: Date.now() };
+  localStorage.setItem("epProgress", JSON.stringify(all));
+};
+const getShowEpProgress = (showId) => {
+  const all = getEpProgress();
+  return Object.values(all).filter((e) => e.showId === Number(showId));
+};
+
 export function AppProvider({ children }) {
   const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem("algaid_user"));
   const [user, setUser] = useState(() => {
@@ -107,6 +119,7 @@ export function AppProvider({ children }) {
       showLoginModal, setShowLoginModal,
       continueWatching, updateProgress, removeFromContinue,
       updateAvatar,
+      saveEpProgress, getShowEpProgress,
     }}>
       {children}
     </AppContext.Provider>

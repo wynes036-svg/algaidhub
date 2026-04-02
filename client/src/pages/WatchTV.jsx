@@ -10,7 +10,7 @@ const SERVERS = ["VidLink", "2embed (Anime)", "VidSrc.me", "Embed.su", "AniWatch
 export default function WatchTV() {
   const { id, season, episode } = useParams();
   const navigate = useNavigate();
-  const { addFavorite, isFavorite, removeFavorite, updateProgress } = useApp();
+  const { addFavorite, isFavorite, removeFavorite, updateProgress, saveEpProgress } = useApp();
   const [show, setShow] = useState(null);
   const [imdbId, setImdbId] = useState(null);
   const [trailer, setTrailer] = useState(null);
@@ -51,6 +51,7 @@ export default function WatchTV() {
       elapsedRef.current += 10;
       const percent = Math.min(Math.round((elapsedRef.current / totalSeconds) * 100), 94);
       updateProgress({ ...show, title: show.name, id: Number(id) }, percent);
+      saveEpProgress(Number(id), s, e, percent);
     }, 10000);
     return () => clearInterval(timerRef.current);
   }, [activeServer, show?.id]); // eslint-disable-line react-hooks/exhaustive-deps
