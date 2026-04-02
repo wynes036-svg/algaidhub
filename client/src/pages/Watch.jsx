@@ -111,37 +111,35 @@ export default function Watch() {
   };
 
   return (
-    <div className="watch-page">
-        <div className="watch-header">
-          <button className="watch-back-btn" onClick={() => navigate(-1)}>← Back</button>
-          <span className="watch-title">{movie?.title}</span>
-          <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center" }}>
-            <FullscreenButton targetRef={playerRef} />
-            {movie && (
-              <button
-                onClick={() => favorited ? removeFavorite(movie.id) : addFavorite(movie)}
-                style={{ ...styles.controlBtn, color: favorited ? "#e50914" : "#fff" }}>
-                {favorited ? "♥ Saved" : "♡ My List"}
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="watch-player">
-          <div ref={playerRef} style={{ ...styles.playerWrap, position: "relative" }}>
-            {renderPlayer()}
-          </div>
-        </div>
-
-        <div style={styles.serverBar}>
-          <span style={styles.serverLabel}>Server:</span>
-          {SERVERS.map((s, i) => (
-            <button key={s} onClick={() => setActiveServer(i)}
-              style={{ ...styles.serverBtn, ...(activeServer === i ? styles.serverBtnActive : {}) }}>
-              {s}
+    <div className="watch-page" style={{ height: "100vh", overflow: "hidden" }}>
+      <div className="watch-header">
+        <button className="watch-back-btn" onClick={() => navigate(-1)}>← Back</button>
+        <span className="watch-title">{movie?.title}</span>
+        <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center" }}>
+          <FullscreenButton targetRef={playerRef} />
+          {movie && (
+            <button
+              onClick={() => favorited ? removeFavorite(movie.id) : addFavorite(movie)}
+              style={{ ...styles.controlBtn, color: favorited ? "#e50914" : "#fff" }}>
+              {favorited ? "♥ Saved" : "♡ My List"}
             </button>
-          ))}
+          )}
         </div>
+      </div>
+
+      <div ref={playerRef} style={styles.playerWrap}>
+        {renderPlayer()}
+      </div>
+
+      <div style={styles.serverBar}>
+        <span style={styles.serverLabel}>Server:</span>
+        {SERVERS.map((s, i) => (
+          <button key={s} onClick={() => setActiveServer(i)}
+            style={{ ...styles.serverBtn, ...(activeServer === i ? styles.serverBtnActive : {}) }}>
+            {s}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -152,7 +150,13 @@ const styles = {
   serverLabel: { color: "#e50914", fontSize: "12px", marginRight: "4px", fontWeight: "600", flexShrink: 0 },
   serverBtn: { background: "#2a2a2a", color: "#e50914", border: "1px solid #2a2a2a", padding: "7px 14px", borderRadius: "5px", cursor: "pointer", fontSize: "12px", flexShrink: 0, whiteSpace: "nowrap" },
   serverBtnActive: { background: "#e50914", color: "#fff", border: "1px solid #e50914" },
-  playerWrap: { position: "relative", width: "100%", maxWidth: "1200px", aspectRatio: "16/9", background: "#000", borderRadius: "0", overflow: "hidden", margin: "0 auto" },
+  playerWrap: {
+    flex: 1,
+    position: "relative",
+    background: "#000",
+    overflow: "hidden",
+    minHeight: 0,
+  },
   iframe: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" },
   noVideo: { textAlign: "center", color: "#aaa", padding: "60px 20px", fontSize: "16px" },
 };

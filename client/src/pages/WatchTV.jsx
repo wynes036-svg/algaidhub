@@ -86,48 +86,45 @@ export default function WatchTV() {
   };
 
   return (
-    <div className="watch-page">
-        <div className="watch-header">
-          <button className="watch-back-btn" onClick={() => navigate(`/tv/${id}`)}>← Back</button>
-          <span className="watch-title">{show?.name} — S{s}:E{e}</span>
-          <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center" }}>
-            <FullscreenButton targetRef={playerRef} />
-            {show && (
-              <button onClick={() => favorited ? removeFavorite(Number(id)) : addFavorite({ ...show, title: show.name, id: Number(id) })}
-                style={{ ...styles.controlBtn, color: favorited ? "#e50914" : "#fff" }}>
-                {favorited ? "♥ Saved" : "♡ My List"}
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="watch-player">
-          <div ref={playerRef} style={{ ...styles.playerWrap, position: "relative" }}>
-            {renderPlayer()}
-          </div>
-        </div>
-
-        <div style={styles.serverBar}>
-          <span style={styles.serverLabel}>Server:</span>
-          {SERVERS.map((sv, i) => (
-            <button key={sv} onClick={() => setActiveServer(i)}
-              style={{ ...styles.serverBtn, ...(activeServer === i ? styles.serverBtnActive : {}) }}>
-              {sv}
+    <div className="watch-page" style={{ height: "100vh", overflow: "hidden" }}>
+      <div className="watch-header">
+        <button className="watch-back-btn" onClick={() => navigate(`/tv/${id}`)}>← Back</button>
+        <span className="watch-title">{show?.name} — S{s}:E{e}</span>
+        <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center" }}>
+          <FullscreenButton targetRef={playerRef} />
+          {show && (
+            <button onClick={() => favorited ? removeFavorite(Number(id)) : addFavorite({ ...show, title: show.name, id: Number(id) })}
+              style={{ ...styles.controlBtn, color: favorited ? "#e50914" : "#fff" }}>
+              {favorited ? "♥ Saved" : "♡ My List"}
             </button>
-          ))}
-          {(isAnime || activeServer === 1 || activeServer === 4) && (
-            <div style={styles.langToggle}>
-              <button onClick={() => setLang("sub")} style={{ ...styles.langBtn, ...(lang === "sub" ? styles.langBtnActive : {}) }}>SUB</button>
-              <button onClick={() => setLang("dub")} style={{ ...styles.langBtn, ...(lang === "dub" ? styles.langBtnActive : {}) }}>DUB</button>
-            </div>
           )}
         </div>
+      </div>
 
-        <div style={styles.epNav}>
+      <div ref={playerRef} style={styles.playerWrap}>
+        {renderPlayer()}
+      </div>
+
+      <div style={styles.serverBar}>
+        <span style={styles.serverLabel}>Server:</span>
+        {SERVERS.map((sv, i) => (
+          <button key={sv} onClick={() => setActiveServer(i)}
+            style={{ ...styles.serverBtn, ...(activeServer === i ? styles.serverBtnActive : {}) }}>
+            {sv}
+          </button>
+        ))}
+        {(isAnime || activeServer === 1 || activeServer === 4) && (
+          <div style={styles.langToggle}>
+            <button onClick={() => setLang("sub")} style={{ ...styles.langBtn, ...(lang === "sub" ? styles.langBtnActive : {}) }}>SUB</button>
+            <button onClick={() => setLang("dub")} style={{ ...styles.langBtn, ...(lang === "dub" ? styles.langBtnActive : {}) }}>DUB</button>
+          </div>
+        )}
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "8px" }}>
           {e > 1 && <button style={styles.navBtn} onClick={() => navigate(`/watch/tv/${id}/${s}/${e - 1}`)}>← Prev</button>}
-          <span style={{ color: "#e50914", fontSize: "13px", fontWeight: "600" }}>Season {s} · Episode {e}</span>
+          <span style={{ color: "#e50914", fontSize: "12px", fontWeight: "600" }}>S{s}:E{e}</span>
           <button style={styles.navBtn} onClick={() => navigate(`/watch/tv/${id}/${s}/${e + 1}`)}>Next →</button>
         </div>
+      </div>
     </div>
   );
 }
@@ -143,7 +140,13 @@ const styles = {
   langToggle: { marginLeft: "auto", display: "flex", background: "#2a2a2a", borderRadius: "6px", overflow: "hidden", border: "1px solid #e50914", flexShrink: 0 },
   langBtn: { background: "transparent", color: "#e50914", border: "none", padding: "6px 14px", cursor: "pointer", fontSize: "12px", fontWeight: "600" },
   langBtnActive: { background: "#e50914", color: "#fff" },
-  playerWrap: { position: "relative", width: "100%", maxWidth: "1200px", aspectRatio: "16/9", background: "#000", borderRadius: "0", overflow: "hidden", margin: "0 auto" },
+  playerWrap: {
+    flex: 1,
+    position: "relative",
+    background: "#000",
+    overflow: "hidden",
+    minHeight: 0,
+  },
   iframe: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" },
   noVideo: { textAlign: "center", color: "#aaa", padding: "60px 20px", fontSize: "16px" },
 };

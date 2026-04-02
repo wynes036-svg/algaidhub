@@ -285,9 +285,10 @@ a:hover { color: #e50914; }
 /* Watch page */
 .watch-page {
   background: #000;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 .watch-header {
   padding: 14px 24px;
