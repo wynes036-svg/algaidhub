@@ -13,6 +13,7 @@ import WatchTV from "./pages/WatchTV";
 import NewPopular from "./pages/NewPopular";
 import LoginModal from "./components/LoginModal";
 import AdBlockBanner from "./components/AdBlockBanner";
+import InstallPrompt from "./components/InstallPrompt";
 import "./index.css";
 
 function AppRoutes() {
@@ -21,6 +22,7 @@ function AppRoutes() {
     <>
       {showLoginModal && <LoginModal />}
       <AdBlockBanner />
+      <InstallPrompt />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/movies" element={<Movies />} />
