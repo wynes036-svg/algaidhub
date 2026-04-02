@@ -4,6 +4,10 @@ function isMobile() {
   return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
+function isTV() {
+  return /SmartTV|SMART-TV|Tizen|webOS|NetCast|BRAVIA|HbbTV|CrKey|Roku|AppleTV|TV Safari/i.test(navigator.userAgent);
+}
+
 function detectAdBlock() {
   return new Promise((resolve) => {
     const bait = document.createElement("div");
@@ -23,6 +27,7 @@ function detectAdBlock() {
 export default function AdBlockBanner() {
   const [visible, setVisible] = useState(false);
   const mobile = isMobile();
+  const tv = isTV();
 
   useEffect(() => {
     if (localStorage.getItem("adblock_dismissed")) return;
@@ -41,7 +46,15 @@ export default function AdBlockBanner() {
   return (
     <div style={styles.banner}>
       <span style={styles.icon}>🛡️</span>
-      {mobile ? (
+      {tv ? (
+        <span style={styles.text}>
+          For ad-free streaming on your TV, set your DNS to{" "}
+          <a href="https://adguard-dns.io/en/public-dns.html" target="_blank" rel="noopener noreferrer" style={styles.link}>
+            AdGuard DNS
+          </a>
+          {" "}(94.140.14.14) in your TV network settings — blocks ads on every app, no install needed.
+        </span>
+      ) : mobile ? (
         <span style={styles.text}>
           For the best mobile experience, use{" "}
           <a href="https://brave.com/download" target="_blank" rel="noopener noreferrer" style={styles.link}>
