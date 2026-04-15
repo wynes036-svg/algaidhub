@@ -18,7 +18,8 @@ const categories = [
 
 export default function Home() {
   const [rows, setRows] = useState([]);
-  const [hero, setHero] = useState(null);
+  const [heroMovies, setHeroMovies] = useState([]);
+  const [heroIndex, setHeroIndex] = useState(0);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -32,19 +33,24 @@ export default function Home() {
       );
       setRows(results);
       if (results[0]?.movies?.length) {
-        setHero(results[0].movies[Math.floor(Math.random() * 5)]);
+        setHeroMovies(results[0].movies.slice(0, 10));
+        setHeroIndex(Math.floor(Math.random() * 5));
       }
     };
     fetchAll();
-    const interval = setInterval(fetchAll, 30 * 60 * 1000); // refresh every 30 min
+    const interval = setInterval(fetchAll, 30 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
+
+  const hero = heroMovies[heroIndex] || null;
+  const prevHero = () => setHeroIndex((i) => (i === 0 ? heroMovies.length - 1 : i - 1));
+  const nextHero = () => setHeroIndex((i) => (i === heroMovies.length - 1 ? 0 : i + 1));
 
   return (
     <>
       <Navbar />
       <div id="main-wrapper">
-        {hero && <Hero movie={hero} />}
+        {hero && <Hero movie={hero} onPrev={prevHero} onNext={nextHero} total={heroMovies.length} index={heroIndex} />}
         <ContinueWatching />
         <Top10Row />
         {rows.map((row) => (
