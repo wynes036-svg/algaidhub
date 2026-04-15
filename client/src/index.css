@@ -50,8 +50,8 @@ a:hover { color: #e50914; }
 /* Header */
 #header {
   height: 65px;
-  background: #0a0a0a;
-  border-bottom: 2px solid #e50914;
+  background: transparent;
+  border-bottom: none;
   position: fixed;
   top: 0; left: 0; right: 0;
   z-index: 999;
@@ -61,7 +61,7 @@ a:hover { color: #e50914; }
   justify-content: space-between;
   transition: background 0.3s;
 }
-#header.scrolled { background: #000; }
+#header.scrolled { background: rgba(0,0,0,0.95); border-bottom: 1px solid #1a1a1a; }
 
 #logo { cursor: pointer; display: flex; align-items: center; }
 
@@ -101,7 +101,8 @@ a:hover { color: #e50914; }
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to right, rgba(0,0,0,0.9) 35%, transparent 70%),
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 30%),
+              linear-gradient(to right, rgba(0,0,0,0.9) 35%, transparent 70%),
               linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 40%);
 }
 .hero-content { position: relative; max-width: 520px; }
