@@ -6,7 +6,7 @@ import FullscreenButton from "../components/FullscreenButton";
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
 const VIDEO_SERVER = "http://localhost:3001";
-const SERVERS = ["VidLink", "VidSrc.me", "Embed.su", "My Server", "YouTube Trailer"];
+const SERVERS = ["VidLink", "VidSrc.me", "My Server", "YouTube Trailer"];
 
 export default function Watch() {
   const { id } = useParams();
@@ -43,8 +43,7 @@ export default function Watch() {
     clearInterval(timerRef.current);
     elapsedRef.current = 0;
     if (activeServer === 3) return;
-    updateProgress(movie, 1);
-    timerRef.current = setInterval(() => {
+    updateProgress(movie, 1);    timerRef.current = setInterval(() => {
       elapsedRef.current += 10;
       const percent = Math.min(Math.round((elapsedRef.current / totalSeconds) * 100), 94);
       updateProgress(movie, percent);
@@ -86,9 +85,7 @@ export default function Watch() {
       return <iframe key={"vl"+id} src={`https://vidlink.pro/movie/${id}?autoplay=true&muted=false&primaryColor=e50914`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
     if (activeServer === 1)
       return <iframe key={"vm"+id} src={`https://vidsrc.me/embed/movie?tmdb=${id}&autoplay=1`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
-    if (activeServer === 2)
-      return <iframe key={"es"+id} src={`https://embed.su/embed/movie/${id}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
-    if (activeServer === 3) {
+    if (activeServer === 2) {
       if (!videoUrl) return <div style={styles.noVideo}><p>No video file found. Add {id}.mp4 to server/videos/</p></div>;
       return (
         <video ref={videoRef} key={videoUrl} controls autoPlay

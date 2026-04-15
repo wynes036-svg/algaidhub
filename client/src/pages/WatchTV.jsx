@@ -5,7 +5,7 @@ import FullscreenButton from "../components/FullscreenButton";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
-const SERVERS = ["VidLink", "2embed (Anime)", "VidSrc.me", "Embed.su", "AniWatch (Sub/Dub)", "YouTube Trailer"];
+const SERVERS = ["VidLink", "2embed (Anime)", "VidSrc.me", "AniWatch (Sub/Dub)", "YouTube Trailer"];
 
 export default function WatchTV() {
   const { id, season, episode } = useParams();
@@ -81,10 +81,6 @@ export default function WatchTV() {
     if (activeServer === 2)
       return <iframe key={`vm-${id}-${s}-${e}`} src={`https://vidsrc.me/embed/tv?tmdb=${id}&season=${s}&episode=${e}&autoplay=1`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
     if (activeServer === 3) {
-      if (!imdbId) return <div style={styles.noVideo}><p>Not found on Embed.su</p></div>;
-      return <iframe key={`es-${imdbId}-${s}-${e}`} src={`https://embed.su/embed/tv/${imdbId}/${s}/${e}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
-    }
-    if (activeServer === 4) {
       const dubParam = lang === "dub" ? "&dubbed=1" : "";
       return <iframe key={`aw-${id}-${s}-${e}-${lang}`} src={`https://vidsrc.to/embed/tv/${id}/${s}/${e}${dubParam}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
     }
@@ -120,7 +116,7 @@ export default function WatchTV() {
             {sv}
           </button>
         ))}
-        {(isAnime || activeServer === 1 || activeServer === 4) && (
+        {(isAnime || activeServer === 1 || activeServer === 3) && (
           <div style={styles.langToggle}>
             <button onClick={() => setLang("sub")} style={{ ...styles.langBtn, ...(lang === "sub" ? styles.langBtnActive : {}) }}>SUB</button>
             <button onClick={() => setLang("dub")} style={{ ...styles.langBtn, ...(lang === "dub" ? styles.langBtnActive : {}) }}>DUB</button>
