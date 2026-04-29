@@ -15,12 +15,7 @@ export default function Watch() {
   const [trailer, setTrailer] = useState(null);
   const [movie, setMovie] = useState(null);
   const [imdbId, setImdbId] = useState(null);
-  const [activeServer, setActiveServer] = useState(() => {
-    const ua = navigator.userAgent;
-    if (/SmartTV|SMART-TV|Tizen|webOS|HbbTV|Android TV|TV Safari/i.test(ua)) return 1; // TV → VidSrc.me
-    if (/Android|iPhone|iPad|iPod/i.test(ua)) return 0; // Mobile → VidLink
-    return 1; // Desktop/Laptop → VidSrc.me
-  });
+  const [activeServer, setActiveServer] = useState(1);
   const [serverVideos, setServerVideos] = useState([]);
   const timerRef = useRef(null);
   const elapsedRef = useRef(0);
