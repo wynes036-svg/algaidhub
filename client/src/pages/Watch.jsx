@@ -15,7 +15,9 @@ export default function Watch() {
   const [trailer, setTrailer] = useState(null);
   const [movie, setMovie] = useState(null);
   const [imdbId, setImdbId] = useState(null);
-  const [activeServer, setActiveServer] = useState(0);
+  const [activeServer, setActiveServer] = useState(
+    /SmartTV|SMART-TV|Tizen|webOS|HbbTV|Android TV|TV Safari/i.test(navigator.userAgent) ? 1 : 0
+  );
   const [serverVideos, setServerVideos] = useState([]);
   const timerRef = useRef(null);
   const elapsedRef = useRef(0);

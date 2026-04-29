@@ -14,7 +14,9 @@ export default function WatchTV() {
   const [show, setShow] = useState(null);
   const [imdbId, setImdbId] = useState(null);
   const [trailer, setTrailer] = useState(null);
-  const [activeServer, setActiveServer] = useState(0);
+  const [activeServer, setActiveServer] = useState(
+    /SmartTV|SMART-TV|Tizen|webOS|HbbTV|Android TV|TV Safari/i.test(navigator.userAgent) ? 2 : 0
+  );
   const [lang, setLang] = useState("sub");
   const playerRef = useRef(null);
   const timerRef = useRef(null);
