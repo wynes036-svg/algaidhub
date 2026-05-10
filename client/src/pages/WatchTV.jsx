@@ -14,7 +14,7 @@ export default function WatchTV() {
   const [show, setShow] = useState(null);
   const [imdbId, setImdbId] = useState(null);
   const [trailer, setTrailer] = useState(null);
-  const [activeServer, setActiveServer] = useState(0);
+  const [activeServer, setActiveServer] = useState(2);
   const [lang, setLang] = useState("sub");
   const playerRef = useRef(null);
   const timerRef = useRef(null);
