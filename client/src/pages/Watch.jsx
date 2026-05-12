@@ -6,7 +6,7 @@ import FullscreenButton from "../components/FullscreenButton";
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
 const VIDEO_SERVER = "http://localhost:3001";
-const SERVERS = ["VidLink", "AutoEmbed", "VidSrc.mov", "My Server", "YouTube Trailer"];
+const SERVERS = ["VidLink", "VidSrc.mov", "VidSrc.cc", "My Server", "YouTube Trailer"];
 
 export default function Watch() {
   const { id } = useParams();
@@ -84,9 +84,9 @@ export default function Watch() {
     if (activeServer === 0)
       return <iframe key={"vl"+id} src={`https://vidlink.pro/movie/${id}?autoplay=true&muted=false&primaryColor=e50914`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
     if (activeServer === 1)
-      return <iframe key={"ae"+id} src={`https://autoembed.co/movie/tmdb/${id}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
-    if (activeServer === 2)
       return <iframe key={"vm"+id} src={`https://vidsrc.mov/embed/movie/${id}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
+    if (activeServer === 2)
+      return <iframe key={"vc"+id} src={`https://vidsrc.cc/embed/movie/${id}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
     if (activeServer === 3) {
       if (!videoUrl) return <div style={styles.noVideo}><p>No video file found. Add {id}.mp4 to server/videos/</p></div>;
       return (
