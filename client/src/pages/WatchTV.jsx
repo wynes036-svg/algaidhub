@@ -14,6 +14,7 @@ export default function WatchTV() {
   const [show, setShow] = useState(null);
   const [imdbId, setImdbId] = useState(null);
   const [trailer, setTrailer] = useState(null);
+  const [seasonEpisodeCount, setSeasonEpisodeCount] = useState({});
   const [activeServer, setActiveServer] = useState(() => {
     const ua = navigator.userAgent;
     if (/SmartTV|SMART-TV|Tizen|webOS|HbbTV|Android TV|TV Safari/i.test(ua)) return 2; // TV → VidSrc.mov
@@ -28,7 +29,26 @@ export default function WatchTV() {
   const s = Number(season) || 1;
   const e = Number(episode) || 1;
 
-  const isAnime = show?.genres?.some((g) => g.id === 16) || show?.origin_country?.includes("JP");
+  const totalSeasons = show?.number_of_seasons || 1;
+  const episodesInCurrentSeason = seasonEpisodeCount[s] || 99;
+  const isLastEpisode = e >= episodesInCurrentSeason;
+  const isFirstEpisode = e === 1 && s === 1;
+
+  const goNext = () => {
+    if (isLastEpisode) {
+      if (s < totalSeasons) navigate(`/watch/tv/${id}/${s + 1}/1`);
+    } else {
+      navigate(`/watch/tv/${id}/${s}/${e + 1}`);
+    }
+  };
+
+  const goPrev = () => {
+    if (e === 1) {
+      if (s > 1) navigate(`/watch/tv/${id}/${s - 1}/${seasonEpisodeCount[s - 1] || 1}`);
+    } else {
+      navigate(`/watch/tv/${id}/${s}/${e - 1}`);
+    }
+  };
   const favorited = show && isFavorite(Number(id));
 
   useEffect(() => {
@@ -39,6 +59,12 @@ export default function WatchTV() {
         setImdbId(data.external_ids?.imdb_id || null);
         const yt = data.videos?.results?.find((v) => v.type === "Trailer" && v.site === "YouTube");
         setTrailer(yt);
+        // Build a map of season → episode count
+        const map = {};
+        (data.seasons || []).filter((s) => s.season_number > 0).forEach((s) => {
+          map[s.season_number] = s.episode_count;
+        });
+        setSeasonEpisodeCount(map);
       });
   }, [id]);
 
@@ -68,7 +94,7 @@ export default function WatchTV() {
   useEffect(() => {
     if (nextEpCountdown === null) return;
     if (nextEpCountdown === 0) {
-      navigate(`/watch/tv/${id}/${s}/${e + 1}`);
+      goNext();
       return;
     }
     countdownRef.current = setTimeout(() => setNextEpCountdown((c) => c - 1), 1000);
@@ -130,10 +156,10 @@ export default function WatchTV() {
             <div style={styles.nextEpContent}>
               <p style={{ color: "#aaa", fontSize: "13px", marginBottom: "6px" }}>Next Episode</p>
               <p style={{ color: "#fff", fontSize: "16px", fontWeight: "600", marginBottom: "14px" }}>
-                S{s}:E{e + 1}
+                {isLastEpisode ? `Season ${s + 1} E1` : `S${s}:E${e + 1}`}
               </p>
               <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                <button style={styles.nextEpBtn} onClick={() => navigate(`/watch/tv/${id}/${s}/${e + 1}`)}>
+                <button style={styles.nextEpBtn} onClick={goNext}>
                   ▶ Play Now
                 </button>
                 <button style={styles.cancelBtn} onClick={() => { setNextEpCountdown(null); clearInterval(countdownRef.current); }}>
@@ -160,9 +186,9 @@ export default function WatchTV() {
           </div>
         )}
         <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "8px" }}>
-          {e > 1 && <button style={styles.navBtn} onClick={() => navigate(`/watch/tv/${id}/${s}/${e - 1}`)}>← Prev</button>}
+          {!isFirstEpisode && <button style={styles.navBtn} onClick={goPrev}>← Prev</button>}
           <span style={{ color: "#e50914", fontSize: "12px", fontWeight: "600" }}>S{s}:E{e}</span>
-          <button style={styles.navBtn} onClick={() => navigate(`/watch/tv/${id}/${s}/${e + 1}`)}>Next →</button>
+          {!(isLastEpisode && s >= totalSeasons) && <button style={styles.navBtn} onClick={goNext}>Next →</button>}
         </div>
       </div>
     </div>
