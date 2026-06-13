@@ -20,6 +20,8 @@ export default function WatchTV() {
     return 0; // Mobile + Desktop → VidLink
   });
   const [lang, setLang] = useState("sub");
+  const [nextEpCountdown, setNextEpCountdown] = useState(null);
+  const countdownRef = useRef(null);
   const playerRef = useRef(null);
   const timerRef = useRef(null);
   const elapsedRef = useRef(0);
@@ -45,7 +47,8 @@ export default function WatchTV() {
     const totalSeconds = (show.episode_run_time?.[0] || 45) * 60;
     clearInterval(timerRef.current);
     elapsedRef.current = 0;
-    // Save immediately so continue watching knows the current episode
+    setNextEpCountdown(null);
+    clearInterval(countdownRef.current);
     saveEpProgress(Number(id), s, e, 1);
     updateProgress({ ...show, title: show.name, id: Number(id) }, 1);
     timerRef.current = setInterval(() => {
@@ -53,9 +56,24 @@ export default function WatchTV() {
       const percent = Math.min(Math.round((elapsedRef.current / totalSeconds) * 100), 94);
       updateProgress({ ...show, title: show.name, id: Number(id) }, percent);
       saveEpProgress(Number(id), s, e, percent);
+      // Show next episode countdown at 90%
+      if (percent >= 90 && nextEpCountdown === null) {
+        setNextEpCountdown(10);
+      }
     }, 10000);
-    return () => clearInterval(timerRef.current);
+    return () => { clearInterval(timerRef.current); clearInterval(countdownRef.current); };
   }, [show?.id, s, e]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Countdown tick
+  useEffect(() => {
+    if (nextEpCountdown === null) return;
+    if (nextEpCountdown === 0) {
+      navigate(`/watch/tv/${id}/${s}/${e + 1}`);
+      return;
+    }
+    countdownRef.current = setTimeout(() => setNextEpCountdown((c) => c - 1), 1000);
+    return () => clearTimeout(countdownRef.current);
+  }, [nextEpCountdown]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => () => clearInterval(timerRef.current), []);
 
@@ -107,6 +125,24 @@ export default function WatchTV() {
 
       <div ref={playerRef} style={styles.playerWrap}>
         {renderPlayer()}
+        {nextEpCountdown !== null && (
+          <div style={styles.nextEpBanner}>
+            <div style={styles.nextEpContent}>
+              <p style={{ color: "#aaa", fontSize: "13px", marginBottom: "6px" }}>Next Episode</p>
+              <p style={{ color: "#fff", fontSize: "16px", fontWeight: "600", marginBottom: "14px" }}>
+                S{s}:E{e + 1}
+              </p>
+              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <button style={styles.nextEpBtn} onClick={() => navigate(`/watch/tv/${id}/${s}/${e + 1}`)}>
+                  ▶ Play Now
+                </button>
+                <button style={styles.cancelBtn} onClick={() => { setNextEpCountdown(null); clearInterval(countdownRef.current); }}>
+                  Cancel ({nextEpCountdown})
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div style={styles.serverBar}>
@@ -146,6 +182,21 @@ const styles = {
   playerWrap: { flex: 1, position: "relative", background: "#000", overflow: "hidden", minHeight: 0 },
   iframe: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" },
   noVideo: { textAlign: "center", color: "#aaa", padding: "60px 20px", fontSize: "16px" },
+  nextEpBanner: {
+    position: "absolute", bottom: "20px", right: "20px", zIndex: 20,
+    background: "rgba(0,0,0,0.9)", border: "1px solid #e50914",
+    borderRadius: "8px", padding: "16px 20px", minWidth: "220px",
+  },
+  nextEpContent: { textAlign: "center" },
+  nextEpBtn: {
+    background: "#e50914", color: "#fff", border: "none",
+    padding: "8px 18px", borderRadius: "4px", cursor: "pointer",
+    fontSize: "13px", fontWeight: "600",
+  },
+  cancelBtn: {
+    background: "transparent", color: "#aaa", border: "1px solid #444",
+    padding: "8px 14px", borderRadius: "4px", cursor: "pointer", fontSize: "13px",
+  },
   loadingOverlay: {
     position: "absolute", inset: 0, background: "rgba(0,0,0,0.85)",
     display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", zIndex: 10,
