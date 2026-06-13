@@ -5,7 +5,7 @@ import FullscreenButton from "../components/FullscreenButton";
 
 const API_KEY = "72f9d7794f529cdf9668a48bff8f8015";
 const BASE_URL = "https://api.themoviedb.org/3";
-const SERVERS = ["VidLink", "2embed (Anime)", "VidSrc.mov", "VidSrc.cc", "AniWatch (Sub/Dub)", "YouTube Trailer"];
+const SERVERS = ["VidLink", "2embed (Anime)", "VidSrc.mov", "VidSrc.icu", "AniWatch (Sub/Dub)", "YouTube Trailer"];
 
 export default function WatchTV() {
   const { id, season, episode } = useParams();
@@ -14,7 +14,11 @@ export default function WatchTV() {
   const [show, setShow] = useState(null);
   const [imdbId, setImdbId] = useState(null);
   const [trailer, setTrailer] = useState(null);
-  const [activeServer, setActiveServer] = useState(2);
+  const [activeServer, setActiveServer] = useState(() => {
+    const ua = navigator.userAgent;
+    if (/SmartTV|SMART-TV|Tizen|webOS|HbbTV|Android TV|TV Safari/i.test(ua)) return 2; // TV → VidSrc.mov
+    return 0; // Mobile + Desktop → VidLink
+  });
   const [lang, setLang] = useState("sub");
   const playerRef = useRef(null);
   const timerRef = useRef(null);
@@ -76,7 +80,7 @@ export default function WatchTV() {
     if (activeServer === 2)
       return <iframe key={`vm-${id}-${s}-${e}`} src={`https://vidsrc.mov/embed/tv/${id}/${s}/${e}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
     if (activeServer === 3)
-      return <iframe key={`vc-${id}-${s}-${e}`} src={`https://vidsrc.cc/embed/tv/${id}/${s}/${e}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
+      return <iframe key={`vi-${id}-${s}-${e}`} src={`https://vidsrc.icu/embed/tv/${id}/${s}/${e}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
     if (activeServer === 4) {
       const dubParam = lang === "dub" ? "&dubbed=1" : "";
       return <iframe key={`aw-${id}-${s}-${e}-${lang}`} src={`https://vidsrc.to/embed/tv/${id}/${s}/${e}${dubParam}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
