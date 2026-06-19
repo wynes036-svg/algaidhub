@@ -4,7 +4,8 @@ import { useApp } from "../context/AppContext";
 const IMG_BASE = "https://image.tmdb.org/t/p/w300";
 
 function getWatchPath(item) {
-  const isTV = !!item.first_air_date || !!item.name && !item.title;
+  // Check explicit mediaType first, then fall back to field detection
+  const isTV = item.mediaType === "tv" || !!item.first_air_date || (!!item.name && !item.title);
   if (isTV) {
     const ep = JSON.parse(localStorage.getItem("epProgress") || "{}");
     const last = Object.values(ep)

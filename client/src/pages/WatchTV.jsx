@@ -76,11 +76,11 @@ export default function WatchTV() {
     setNextEpCountdown(null);
     clearInterval(countdownRef.current);
     saveEpProgress(Number(id), s, e, 1);
-    updateProgress({ ...show, title: show.name, id: Number(id) }, 1);
+    updateProgress({ ...show, title: show.name, id: Number(id), mediaType: "tv" }, 1);
     timerRef.current = setInterval(() => {
       elapsedRef.current += 10;
       const percent = Math.min(Math.round((elapsedRef.current / totalSeconds) * 100), 94);
-      updateProgress({ ...show, title: show.name, id: Number(id) }, percent);
+      updateProgress({ ...show, title: show.name, id: Number(id), mediaType: "tv" }, percent);
       saveEpProgress(Number(id), s, e, percent);
       // Show next episode countdown at 90%
       if (percent >= 90 && nextEpCountdown === null) {

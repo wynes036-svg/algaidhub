@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 const IMG_BASE = "https://image.tmdb.org/t/p/w300";
 
 function getWatchPath(item) {
-  const isTV = !!item.first_air_date || (!!item.name && !item.title);
+  const isTV = item.mediaType === "tv" || !!item.first_air_date || (!!item.name && !item.title);
   if (isTV) {
     const ep = JSON.parse(localStorage.getItem("epProgress") || "{}");
     const last = Object.values(ep)
