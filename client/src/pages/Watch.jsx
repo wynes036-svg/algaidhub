@@ -17,6 +17,165 @@ export default function Watch() {
   const [imdbId, setImdbId] = useState(null);
   const [activeServer, setActiveServer] = useState(0);
   const [serverVideos, setServerVideos] = useState([]);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+  const timerRef = useRef(null);
+  const elapsedRef = useRef(0);
+  const videoRef = useRef(null);
+  const playerRef = useRef(null);
+
+  useEffect(() => {
+    fetch(`${BASE_URL}/movie/${id}?api_key=${API_KEY}&append_to_response=videos,external_ids`)
+      .then((r) => r.json())
+      .then((data) => {
+        setMovie(data);
+        setImdbId(data.external_ids?.imdb_id || null);
+        const yt = data.videos?.results?.find((v) => v.type === "Trailer" && v.site === "YouTube");
+        setTrailer(yt);
+      });
+    fetch(`${VIDEO_SERVER}/videos`)
+      .then((r) => r.json())
+      .then((d) => setServerVideos(d.videos || []))
+      .catch(() => setServerVideos([]));
+  }, [id]);
+
+  useEffect(() => {
+    setIframeLoaded(false);
+  }, [activeServer, id]);
+
+  useEffect(() => {
+    if (!movie) return;
+    const totalSeconds = (movie.runtime || 120) * 60;
+    clearInterval(timerRef.current);
+    elapsedRef.current = 0;
+    if (activeServer === 3) return;
+    updateProgress(movie, 1);
+    timerRef.current = setInterval(() => {
+      elapsedRef.current += 10;
+      const percent = Math.min(Math.round((elapsedRef.current / totalSeconds) * 100), 94);
+      updateProgress(movie, percent);
+    }, 10000);
+    return () => clearInterval(timerRef.current);
+  }, [activeServer, movie]);
+
+  useEffect(() => () => clearInterval(timerRef.current), []);
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      const video = videoRef.current;
+      if (e.code === "Space") {
+        e.preventDefault();
+        if (video) video.paused ? video.play() : video.pause();
+      } else if (e.code === "ArrowRight") {
+        e.preventDefault();
+        if (video) video.currentTime = Math.min(video.currentTime + 10, video.duration || 0);
+      } else if (e.code === "ArrowLeft") {
+        e.preventDefault();
+        if (video) video.currentTime = Math.max(video.currentTime - 10, 0);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
+
+  const favorited = movie && isFavorite(movie.id);
+  const matchedVideo = serverVideos.find(
+    (f) => f.startsWith(id) || f.toLowerCase().includes((movie?.title || "").toLowerCase().slice(0, 10))
+  );
+  const videoUrl = matchedVideo ? `${VIDEO_SERVER}/videos/${matchedVideo}` : null;
+
+  const ALLOW = "autoplay; fullscreen; encrypted-media; picture-in-picture";
+
+  const renderPlayer = () => {
+    if (activeServer === 0)
+      return <iframe key={"vl"+id} src={`https://vidlink.pro/movie/${id}?autoplay=true&muted=false&primaryColor=e50914`} style={styles.iframe} allowFullScreen allow={ALLOW} onLoad={() => setIframeLoaded(true)} />;
+    if (activeServer === 1)
+      return <iframe key={"vm"+id} src={`https://vidsrc.mov/embed/movie/${id}`} style={styles.iframe} allowFullScreen allow={ALLOW} onLoad={() => setIframeLoaded(true)} />;
+    if (activeServer === 2)
+      return <iframe key={"vi"+id} src={`https://vidsrc.icu/embed/movie/${id}`} style={styles.iframe} allowFullScreen allow={ALLOW} onLoad={() => setIframeLoaded(true)} />;
+    if (activeServer === 3) {
+      if (!videoUrl) return <div style={styles.noVideo}><p>No video file found. Add {id}.mp4 to server/videos/</p></div>;
+      return (
+        <video ref={videoRef} key={videoUrl} controls autoPlay
+          onTimeUpdate={(e) => {
+            const { currentTime, duration } = e.target;
+            if (duration && movie) {
+              const pct = Math.round((currentTime / duration) * 100);
+              if (pct % 5 === 0) updateProgress(movie, pct);
+            }
+          }}
+          style={{ width: "100%", height: "100%", background: "#000" }}>
+          <source src={videoUrl} type={videoUrl.endsWith(".m3u8") ? "application/x-mpegURL" : "video/mp4"} />
+        </video>
+      );
+    }
+    if (!trailer) return <div style={styles.noVideo}><p>No trailer available.</p></div>;
+    return <iframe src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1`} title={movie?.title} style={styles.iframe} allow="autoplay; fullscreen" allowFullScreen onLoad={() => setIframeLoaded(true)} />;
+  };
+
+  return (
+    <div className="watch-page" style={{ height: "100vh", overflow: "hidden" }}>
+      <div className="watch-header">
+        <button className="watch-back-btn" onClick={() => navigate(-1)}>← Back</button>
+        <span className="watch-title">{movie?.title}</span>
+        <div style={{ marginLeft: "auto", display: "flex", gap: "10px", alignItems: "center" }}>
+          <FullscreenButton targetRef={playerRef} />
+          {movie && (
+            <button
+              onClick={() => favorited ? removeFavorite(movie.id) : addFavorite(movie)}
+              style={{ ...styles.controlBtn, color: favorited ? "#e50914" : "#fff" }}>
+              {favorited ? "♥ Saved" : "♡ My List"}
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div ref={playerRef} style={styles.playerWrap}>
+        {!iframeLoaded && activeServer !== 3 && (
+          <div style={styles.loadingWrap}>
+            <div style={styles.spinner} />
+            <p style={{ color: "#888", marginTop: "16px", fontSize: "14px" }}>Loading player...</p>
+            <p style={{ color: "#555", marginTop: "8px", fontSize: "12px" }}>If it stays black, try another server below</p>
+          </div>
+        )}
+        {renderPlayer()}
+      </div>
+
+      <div style={styles.serverBar}>
+        <span style={styles.serverLabel}>Server:</span>
+        {SERVERS.map((s, i) => (
+          <button key={s} onClick={() => setActiveServer(i)}
+            style={{ ...styles.serverBtn, ...(activeServer === i ? styles.serverBtnActive : {}) }}>
+            {s}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const styles = {
+  controlBtn: { background: "rgba(255,255,255,0.1)", color: "#fff", border: "none", padding: "8px 14px", borderRadius: "4px", cursor: "pointer", fontSize: "13px" },
+  serverBar: { background: "#111", padding: "10px 12px", display: "flex", alignItems: "center", gap: "6px", overflowX: "auto", flexWrap: "nowrap", borderTop: "1px solid #1a1a1a", WebkitOverflowScrolling: "touch" },
+  serverLabel: { color: "#e50914", fontSize: "12px", marginRight: "4px", fontWeight: "600", flexShrink: 0 },
+  serverBtn: { background: "#2a2a2a", color: "#e50914", border: "1px solid #2a2a2a", padding: "7px 14px", borderRadius: "5px", cursor: "pointer", fontSize: "12px", flexShrink: 0, whiteSpace: "nowrap" },
+  serverBtnActive: { background: "#e50914", color: "#fff", border: "1px solid #e50914" },
+  playerWrap: { flex: 1, position: "relative", background: "#000", overflow: "hidden", minHeight: 0 },
+  loadingWrap: { position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", zIndex: 5, pointerEvents: "none" },
+  spinner: { width: "40px", height: "40px", border: "3px solid #333", borderTop: "3px solid #e50914", borderRadius: "50%", animation: "spin 0.8s linear infinite" },
+  iframe: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" },
+  noVideo: { textAlign: "center", color: "#aaa", padding: "60px 20px", fontSize: "16px" },
+};
+
+export default function Watch() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { addFavorite, isFavorite, removeFavorite, updateProgress } = useApp();
+  const [trailer, setTrailer] = useState(null);
+  const [movie, setMovie] = useState(null);
+  const [imdbId, setImdbId] = useState(null);
+  const [activeServer, setActiveServer] = useState(0);
+  const [serverVideos, setServerVideos] = useState([]);
   const timerRef = useRef(null);
   const elapsedRef = useRef(0);
   const videoRef = useRef(null);
