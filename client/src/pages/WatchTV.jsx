@@ -17,15 +17,18 @@ export default function WatchTV() {
   const [seasonEpisodeCount, setSeasonEpisodeCount] = useState({});
   const [activeServer, setActiveServer] = useState(() => {
     const ua = navigator.userAgent;
-    if (/SmartTV|SMART-TV|Tizen|webOS|HbbTV|Android TV|TV Safari/i.test(ua)) return 2; // TV → VidSrc.mov
-    return 0; // Mobile + Desktop → VidLink
+    if (/SmartTV|SMART-TV|Tizen|webOS|HbbTV|Android TV|TV Safari/i.test(ua)) return 2;
+    return 0;
   });
   const [lang, setLang] = useState("sub");
   const [nextEpCountdown, setNextEpCountdown] = useState(null);
-  const countdownRef = useRef(null);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [autoSwitchMsg, setAutoSwitchMsg] = useState("");
   const playerRef = useRef(null);
   const timerRef = useRef(null);
   const elapsedRef = useRef(0);
+  const countdownRef = useRef(null);
+  const autoSwitchRef = useRef(null);
   const s = Number(season) || 1;
   const e = Number(episode) || 1;
 
@@ -34,6 +37,7 @@ export default function WatchTV() {
   const isLastEpisode = e >= episodesInCurrentSeason;
   const isFirstEpisode = e === 1 && s === 1;
   const isAnime = show?.genres?.some((g) => g.id === 16) || show?.origin_country?.includes("JP");
+  const favorited = show && isFavorite(Number(id));
 
   const goNext = () => {
     if (isLastEpisode) {
@@ -50,8 +54,8 @@ export default function WatchTV() {
       navigate(`/watch/tv/${id}/${s}/${e - 1}`);
     }
   };
-  const favorited = show && isFavorite(Number(id));
 
+  // Fetch show data
   useEffect(() => {
     fetch(`${BASE_URL}/tv/${id}?api_key=${API_KEY}&append_to_response=videos,external_ids`)
       .then((r) => r.json())
@@ -60,7 +64,6 @@ export default function WatchTV() {
         setImdbId(data.external_ids?.imdb_id || null);
         const yt = data.videos?.results?.find((v) => v.type === "Trailer" && v.site === "YouTube");
         setTrailer(yt);
-        // Build a map of season → episode count
         const map = {};
         (data.seasons || []).filter((s) => s.season_number > 0).forEach((s) => {
           map[s.season_number] = s.episode_count;
@@ -69,6 +72,22 @@ export default function WatchTV() {
       });
   }, [id]);
 
+  // Auto-switch server if iframe doesn't load within 10s
+  useEffect(() => {
+    setIframeLoaded(false);
+    clearTimeout(autoSwitchRef.current);
+    if (activeServer < 2) {
+      autoSwitchRef.current = setTimeout(() => {
+        const next = activeServer + 1;
+        setAutoSwitchMsg(`Server slow — switching to ${SERVERS[next]}...`);
+        setActiveServer(next);
+        setTimeout(() => setAutoSwitchMsg(""), 3000);
+      }, 10000);
+    }
+    return () => clearTimeout(autoSwitchRef.current);
+  }, [activeServer, id, s, e]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Progress tracking
   useEffect(() => {
     if (!show) return;
     const totalSeconds = (show.episode_run_time?.[0] || 45) * 60;
@@ -83,7 +102,6 @@ export default function WatchTV() {
       const percent = Math.min(Math.round((elapsedRef.current / totalSeconds) * 100), 94);
       updateProgress({ ...show, title: show.name, id: Number(id), mediaType: "tv" }, percent);
       saveEpProgress(Number(id), s, e, percent);
-      // Show next episode countdown at 90%
       if (percent >= 90 && nextEpCountdown === null) {
         setNextEpCountdown(10);
       }
@@ -91,13 +109,10 @@ export default function WatchTV() {
     return () => { clearInterval(timerRef.current); clearInterval(countdownRef.current); };
   }, [show?.id, s, e]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Countdown tick
+  // Next episode countdown tick
   useEffect(() => {
     if (nextEpCountdown === null) return;
-    if (nextEpCountdown === 0) {
-      goNext();
-      return;
-    }
+    if (nextEpCountdown === 0) { goNext(); return; }
     countdownRef.current = setTimeout(() => setNextEpCountdown((c) => c - 1), 1000);
     return () => clearTimeout(countdownRef.current);
   }, [nextEpCountdown]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -114,24 +129,25 @@ export default function WatchTV() {
   }, []);
 
   const ALLOW = "autoplay; fullscreen; encrypted-media; picture-in-picture";
+  const onLoad = () => { setIframeLoaded(true); clearTimeout(autoSwitchRef.current); };
 
   const renderPlayer = () => {
     if (activeServer === 0)
-      return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&muted=false&primaryColor=e50914`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
+      return <iframe key={`vl-${id}-${s}-${e}`} src={`https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&muted=false&primaryColor=e50914`} style={styles.iframe} allowFullScreen allow={ALLOW} onLoad={onLoad} />;
     if (activeServer === 1) {
       const dubParam = lang === "dub" ? "&dubbing=1" : "";
-      return <iframe key={`2e-${id}-${s}-${e}-${lang}`} src={`https://www.2embed.cc/embedtvfull/${id}&s=${s}&e=${e}${dubParam}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
+      return <iframe key={`2e-${id}-${s}-${e}-${lang}`} src={`https://www.2embed.cc/embedtvfull/${id}&s=${s}&e=${e}${dubParam}`} style={styles.iframe} allowFullScreen allow={ALLOW} onLoad={onLoad} />;
     }
     if (activeServer === 2)
-      return <iframe key={`vm-${id}-${s}-${e}`} src={`https://vidsrc.mov/embed/tv/${id}/${s}/${e}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
+      return <iframe key={`vm-${id}-${s}-${e}`} src={`https://vidsrc.mov/embed/tv/${id}/${s}/${e}`} style={styles.iframe} allowFullScreen allow={ALLOW} onLoad={onLoad} />;
     if (activeServer === 3)
-      return <iframe key={`vi-${id}-${s}-${e}`} src={`https://vidsrc.icu/embed/tv/${id}/${s}/${e}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
+      return <iframe key={`vi-${id}-${s}-${e}`} src={`https://vidsrc.icu/embed/tv/${id}/${s}/${e}`} style={styles.iframe} allowFullScreen allow={ALLOW} onLoad={onLoad} />;
     if (activeServer === 4) {
       const dubParam = lang === "dub" ? "&dubbed=1" : "";
-      return <iframe key={`aw-${id}-${s}-${e}-${lang}`} src={`https://vidsrc.to/embed/tv/${id}/${s}/${e}${dubParam}`} style={styles.iframe} allowFullScreen allow={ALLOW} />;
+      return <iframe key={`aw-${id}-${s}-${e}-${lang}`} src={`https://vidsrc.to/embed/tv/${id}/${s}/${e}${dubParam}`} style={styles.iframe} allowFullScreen allow={ALLOW} onLoad={onLoad} />;
     }
     if (!trailer) return <div style={styles.noVideo}><p>No trailer available.</p></div>;
-    return <iframe src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1`} title={show?.name} style={styles.iframe} allow={ALLOW} allowFullScreen />;
+    return <iframe src={`https://www.youtube.com/embed/${trailer.key}?autoplay=1`} title={show?.name} style={styles.iframe} allow={ALLOW} allowFullScreen onLoad={onLoad} />;
   };
 
   return (
@@ -152,21 +168,18 @@ export default function WatchTV() {
 
       <div ref={playerRef} style={styles.playerWrap}>
         {renderPlayer()}
+        {autoSwitchMsg && <div style={styles.toast}>{autoSwitchMsg}</div>}
         {nextEpCountdown !== null && (
           <div style={styles.nextEpBanner}>
-            <div style={styles.nextEpContent}>
-              <p style={{ color: "#aaa", fontSize: "13px", marginBottom: "6px" }}>Next Episode</p>
-              <p style={{ color: "#fff", fontSize: "16px", fontWeight: "600", marginBottom: "14px" }}>
-                {isLastEpisode ? `Season ${s + 1} E1` : `S${s}:E${e + 1}`}
-              </p>
-              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                <button style={styles.nextEpBtn} onClick={goNext}>
-                  ▶ Play Now
-                </button>
-                <button style={styles.cancelBtn} onClick={() => { setNextEpCountdown(null); clearInterval(countdownRef.current); }}>
-                  Cancel ({nextEpCountdown})
-                </button>
-              </div>
+            <p style={{ color: "#aaa", fontSize: "13px", marginBottom: "6px" }}>Next Episode</p>
+            <p style={{ color: "#fff", fontSize: "16px", fontWeight: "600", marginBottom: "14px" }}>
+              {isLastEpisode ? `Season ${s + 1} E1` : `S${s}:E${e + 1}`}
+            </p>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <button style={styles.nextEpBtn} onClick={goNext}>▶ Play Now</button>
+              <button style={styles.cancelBtn} onClick={() => { setNextEpCountdown(null); clearTimeout(countdownRef.current); }}>
+                Cancel ({nextEpCountdown})
+              </button>
             </div>
           </div>
         )}
@@ -209,28 +222,8 @@ const styles = {
   playerWrap: { flex: 1, position: "relative", background: "#000", overflow: "hidden", minHeight: 0 },
   iframe: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" },
   noVideo: { textAlign: "center", color: "#aaa", padding: "60px 20px", fontSize: "16px" },
-  nextEpBanner: {
-    position: "absolute", bottom: "20px", right: "20px", zIndex: 20,
-    background: "rgba(0,0,0,0.9)", border: "1px solid #e50914",
-    borderRadius: "8px", padding: "16px 20px", minWidth: "220px",
-  },
-  nextEpContent: { textAlign: "center" },
-  nextEpBtn: {
-    background: "#e50914", color: "#fff", border: "none",
-    padding: "8px 18px", borderRadius: "4px", cursor: "pointer",
-    fontSize: "13px", fontWeight: "600",
-  },
-  cancelBtn: {
-    background: "transparent", color: "#aaa", border: "1px solid #444",
-    padding: "8px 14px", borderRadius: "4px", cursor: "pointer", fontSize: "13px",
-  },
-  loadingOverlay: {
-    position: "absolute", inset: 0, background: "rgba(0,0,0,0.85)",
-    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", zIndex: 10,
-  },
-  spinner: {
-    width: "44px", height: "44px", border: "4px solid #333",
-    borderTop: "4px solid #e50914", borderRadius: "50%",
-    animation: "spin 0.8s linear infinite",
-  },
+  toast: { position: "absolute", top: "16px", left: "50%", transform: "translateX(-50%)", background: "rgba(229,9,20,0.9)", color: "#fff", padding: "8px 20px", borderRadius: "20px", fontSize: "13px", fontWeight: "600", zIndex: 20, whiteSpace: "nowrap" },
+  nextEpBanner: { position: "absolute", bottom: "20px", right: "20px", zIndex: 20, background: "rgba(0,0,0,0.9)", border: "1px solid #e50914", borderRadius: "8px", padding: "16px 20px", minWidth: "220px", textAlign: "center" },
+  nextEpBtn: { background: "#e50914", color: "#fff", border: "none", padding: "8px 18px", borderRadius: "4px", cursor: "pointer", fontSize: "13px", fontWeight: "600" },
+  cancelBtn: { background: "transparent", color: "#aaa", border: "1px solid #444", padding: "8px 14px", borderRadius: "4px", cursor: "pointer", fontSize: "13px" },
 };

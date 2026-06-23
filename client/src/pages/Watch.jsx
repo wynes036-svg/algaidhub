@@ -18,6 +18,8 @@ export default function Watch() {
   const [activeServer, setActiveServer] = useState(0);
   const [serverVideos, setServerVideos] = useState([]);
   const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [autoSwitchMsg, setAutoSwitchMsg] = useState("");
+  const autoSwitchRef = useRef(null);
   const timerRef = useRef(null);
   const elapsedRef = useRef(0);
   const videoRef = useRef(null);
@@ -38,7 +40,22 @@ export default function Watch() {
       .catch(() => setServerVideos([]));
   }, [id]);
 
-  useEffect(() => { setIframeLoaded(false); }, [activeServer, id]);
+  useEffect(() => {
+    setIframeLoaded(false);
+    clearTimeout(autoSwitchRef.current);
+    // Auto-switch after 10s if iframe hasn't loaded (skip My Server and Trailer)
+    if (activeServer < 3) {
+      autoSwitchRef.current = setTimeout(() => {
+        if (!iframeLoaded) {
+          const next = activeServer + 1 < 3 ? activeServer + 1 : 0;
+          setAutoSwitchMsg(`Server slow — switching to ${SERVERS[next]}...`);
+          setActiveServer(next);
+          setTimeout(() => setAutoSwitchMsg(""), 3000);
+        }
+      }, 10000);
+    }
+    return () => clearTimeout(autoSwitchRef.current);
+  }, [activeServer, id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!movie) return;
@@ -85,11 +102,11 @@ export default function Watch() {
 
   const renderPlayer = () => {
     if (activeServer === 0)
-      return <iframe key={"vl"+id} src={`https://vidlink.pro/movie/${id}?autoplay=true&muted=false&primaryColor=e50914`} style={styles.iframe} allowFullScreen allow={ALLOW} onLoad={() => setIframeLoaded(true)} />;
+      return <iframe key={"vl"+id} src={`https://vidlink.pro/movie/${id}?autoplay=true&muted=false&primaryColor=e50914`} style={styles.iframe} allowFullScreen allow={ALLOW} onLoad={() => { setIframeLoaded(true); clearTimeout(autoSwitchRef.current); }} />;
     if (activeServer === 1)
-      return <iframe key={"vm"+id} src={`https://vidsrc.mov/embed/movie/${id}`} style={styles.iframe} allowFullScreen allow={ALLOW} onLoad={() => setIframeLoaded(true)} />;
+      return <iframe key={"vm"+id} src={`https://vidsrc.mov/embed/movie/${id}`} style={styles.iframe} allowFullScreen allow={ALLOW} onLoad={() => { setIframeLoaded(true); clearTimeout(autoSwitchRef.current); }} />;
     if (activeServer === 2)
-      return <iframe key={"vi"+id} src={`https://vidsrc.icu/embed/movie/${id}`} style={styles.iframe} allowFullScreen allow={ALLOW} onLoad={() => setIframeLoaded(true)} />;
+      return <iframe key={"vi"+id} src={`https://vidsrc.icu/embed/movie/${id}`} style={styles.iframe} allowFullScreen allow={ALLOW} onLoad={() => { setIframeLoaded(true); clearTimeout(autoSwitchRef.current); }} />;
     if (activeServer === 3) {
       if (!videoUrl) return <div style={styles.noVideo}><p>No video file found. Add {id}.mp4 to server/videos/</p></div>;
       return (
@@ -134,6 +151,9 @@ export default function Watch() {
             <p style={{ color: "#555", marginTop: "8px", fontSize: "12px" }}>If it stays black, try another server below</p>
           </div>
         )}
+        {autoSwitchMsg && (
+          <div style={styles.toast}>{autoSwitchMsg}</div>
+        )}
         {renderPlayer()}
       </div>
 
@@ -161,4 +181,5 @@ const styles = {
   spinner: { width: "40px", height: "40px", border: "3px solid #333", borderTop: "3px solid #e50914", borderRadius: "50%", animation: "spin 0.8s linear infinite" },
   iframe: { position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" },
   noVideo: { textAlign: "center", color: "#aaa", padding: "60px 20px", fontSize: "16px" },
+  toast: { position: "absolute", top: "16px", left: "50%", transform: "translateX(-50%)", background: "rgba(229,9,20,0.9)", color: "#fff", padding: "8px 20px", borderRadius: "20px", fontSize: "13px", fontWeight: "600", zIndex: 20, whiteSpace: "nowrap" },
 };
