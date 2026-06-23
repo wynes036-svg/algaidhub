@@ -33,6 +33,7 @@ export default function WatchTV() {
   const episodesInCurrentSeason = seasonEpisodeCount[s] || 99;
   const isLastEpisode = e >= episodesInCurrentSeason;
   const isFirstEpisode = e === 1 && s === 1;
+  const isAnime = show?.genres?.some((g) => g.id === 16) || show?.origin_country?.includes("JP");
 
   const goNext = () => {
     if (isLastEpisode) {
